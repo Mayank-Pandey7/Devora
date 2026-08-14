@@ -112,9 +112,7 @@ export default function RegisterPage() {
           {/* Card Header */}
           <div className="auth-card-header">
             <div className="auth-brand-row">
-              <div className="auth-brand-logo" style={{ background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '6px', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Sparkles size={16} color="#6366f1" />
-              </div>
+              <img src="/logo.png" alt="Devora" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
               <span className="auth-brand-title">Devora</span>
             </div>
           </div>
