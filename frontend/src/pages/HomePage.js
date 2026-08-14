@@ -442,24 +442,34 @@ export default function HomePage() {
         }
 
         .sai-get-started-btn {
-          background: #ffffff !important;
-          color: #0a0a0a !important;
+          background: #f5c842 !important;
+          color: #1f2123 !important;
           border-radius: 30px !important;
           font-weight: 800 !important;
-          font-size: 0.86rem;
-          padding: 0.5rem 1.35rem !important;
+          font-size: 0.88rem;
+          padding: 0.55rem 1.4rem !important;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
-          transition: all 0.2s ease;
-          box-shadow: 0 4px 15px rgba(255, 255, 255, 0.18) !important;
+          gap: 0.35rem;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+          box-shadow: 0 8px 25px rgba(245, 200, 66, 0.4) !important;
+          cursor: pointer;
         }
 
         .sai-get-started-btn:hover {
-          background: #f5c842 !important;
-          color: #1f2123 !important;
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(245, 200, 66, 0.35) !important;
+          background: #fcd34d !important;
+          color: #0f172a !important;
+          transform: scale(1.08) rotate(2deg) translateY(-1px) !important;
+          box-shadow: 0 14px 40px rgba(245, 200, 66, 0.6) !important;
+        }
+
+        .sai-get-started-btn svg {
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .sai-get-started-btn:hover svg {
+          transform: translateX(4px);
         }
 
         /* Scrolled State Across the 3 Islands */
@@ -490,13 +500,15 @@ export default function HomePage() {
         }
 
         .sai-navbar-dock.scrolled .sai-get-started-btn {
-          background: #1f2123 !important;
-          color: #ffffff !important;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12) !important;
+          background: #f5c842 !important;
+          color: #1f2123 !important;
+          box-shadow: 0 8px 25px rgba(245, 200, 66, 0.35) !important;
         }
 
         .sai-navbar-dock.scrolled .sai-get-started-btn:hover {
-          background: #000000 !important;
+          background: #fcd34d !important;
+          transform: scale(1.08) rotate(2deg) translateY(-1px) !important;
+          box-shadow: 0 14px 40px rgba(245, 200, 66, 0.6) !important;
         }
 
         .sai-mobile-hamburger {
