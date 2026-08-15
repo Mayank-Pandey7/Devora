@@ -1,8 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FileText, Award, AlertTriangle, Sparkles, Briefcase } from "lucide-react";
 
 export default function ResumeShowcase() {
+  const [hoveredProp, setHoveredProp] = useState(null);
+
+  const PROPS = [
+    {
+      id: "ats-scoring",
+      icon: Award,
+      title: "Instant ATS Parsing & Scoring",
+      desc: "Upload your PDF and get a comprehensive score breakdown evaluating formatting, section clarity, readability, and technical depth."
+    },
+    {
+      id: "job-matcher",
+      icon: Briefcase,
+      title: "Job Description Keyword Matcher",
+      desc: "Paste any job posting to calculate an exact match percentage and discover missing keywords before you apply."
+    },
+    {
+      id: "xyz-impact",
+      icon: Sparkles,
+      title: "Google XYZ Impact Formulation",
+      desc: "Get tailored suggestions to rephrase bullet points into metric-driven outcomes that catch recruiter attention."
+    }
+  ];
+
   return (
     <section id="resume-analyzer" style={{ padding: "5rem 1.5rem", background: "linear-gradient(145deg, #f6f5f1 0%, #faf6e9 50%, #fef3cf 100%)", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -83,49 +106,59 @@ export default function ResumeShowcase() {
             </Link>
           </div>
 
-          {/* Right: Key Value Props */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            <div style={{ display: "flex", gap: "1.1rem", alignItems: "flex-start", background: "#ffffff", padding: "1.35rem", borderRadius: "20px", border: "1px solid rgba(0,0,0,0.05)", boxShadow: "0 6px 20px rgba(0,0,0,0.03)" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: "#f6f5f1", border: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Award size={22} color="#1f2123" />
-              </div>
-              <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
-                  Instant ATS Parsing & Scoring
-                </h3>
-                <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.55, margin: 0, fontWeight: 500 }}>
-                  Upload your PDF and get a comprehensive score breakdown evaluating formatting, section clarity, readability, and technical depth.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", gap: "1.1rem", alignItems: "flex-start", background: "#ffffff", padding: "1.35rem", borderRadius: "20px", border: "1px solid rgba(0,0,0,0.05)", boxShadow: "0 6px 20px rgba(0,0,0,0.03)" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: "#f6f5f1", border: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Briefcase size={22} color="#1f2123" />
-              </div>
-              <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
-                  Job Description Keyword Matcher
-                </h3>
-                <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.55, margin: 0, fontWeight: 500 }}>
-                  Paste any job posting to calculate an exact match percentage and discover missing keywords before you apply.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", gap: "1.1rem", alignItems: "flex-start", background: "#ffffff", padding: "1.35rem", borderRadius: "20px", border: "1px solid rgba(0,0,0,0.05)", boxShadow: "0 6px 20px rgba(0,0,0,0.03)" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: "#f6f5f1", border: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Sparkles size={22} color="#f5c842" />
-              </div>
-              <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
-                  Google XYZ Impact Formulation
-                </h3>
-                <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.55, margin: 0, fontWeight: 500 }}>
-                  Get tailored suggestions to rephrase bullet points into metric-driven outcomes that catch recruiter attention.
-                </p>
-              </div>
-            </div>
+          {/* Right: Key Value Props with Hover Animation */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {PROPS.map((prop) => {
+              const isHovered = hoveredProp === prop.id;
+              const Icon = prop.icon;
+              return (
+                <div
+                  key={prop.id}
+                  onMouseEnter={() => setHoveredProp(prop.id)}
+                  onMouseLeave={() => setHoveredProp(null)}
+                  style={{
+                    display: "flex",
+                    gap: "1.15rem",
+                    alignItems: "flex-start",
+                    background: isHovered ? "#ffffff" : "#ffffff",
+                    padding: "1.4rem",
+                    borderRadius: "20px",
+                    border: isHovered ? "1.5px solid #1f2123" : "1px solid rgba(0,0,0,0.05)",
+                    boxShadow: isHovered ? "0 12px 30px rgba(0,0,0,0.08)" : "0 4px 15px rgba(0,0,0,0.02)",
+                    transform: isHovered ? "translateY(-4px) translateX(4px)" : "translateY(0) translateX(0)",
+                    cursor: "pointer",
+                    transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)"
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "46px",
+                      height: "46px",
+                      borderRadius: "14px",
+                      background: isHovered ? "#1f2123" : "#f6f5f1",
+                      border: "1px solid rgba(0,0,0,0.06)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      transform: isHovered ? "scale(1.12) rotate(6deg)" : "scale(1) rotate(0deg)",
+                      boxShadow: isHovered ? "0 6px 16px rgba(0,0,0,0.15)" : "none",
+                      transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)"
+                    }}
+                  >
+                    <Icon size={22} color={isHovered ? "#f5c842" : "#1f2123"} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
+                      {prop.title}
+                    </h3>
+                    <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.55, margin: 0, fontWeight: 500 }}>
+                      {prop.desc}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
