@@ -30,12 +30,14 @@ export default function HomePage() {
     const navRect = navLogoRef.current.getBoundingClientRect();
 
     const scrollY = window.scrollY;
-    // Fluid responsive scroll threshold
-    const threshold = Math.max(380, Math.min(520, window.innerHeight * 0.55));
+    // Slower, more leisurely scroll distance threshold (~750px)
+    const threshold = Math.max(680, Math.min(880, window.innerHeight * 0.95));
 
     const rawProgress = Math.min(1, Math.max(0, scrollY / threshold));
-    // Butter-smooth cubic ease out
-    const p = 1 - Math.pow(1 - rawProgress, 2.5);
+    // Ultra-smooth custom cubic-bezier ease for graceful curved sailing
+    const p = rawProgress < 0.5
+      ? 4 * rawProgress * rawProgress * rawProgress
+      : 1 - Math.pow(-2 * rawProgress + 2, 3) / 2;
 
     const currentlyTraveling = rawProgress > 0.005 && rawProgress < 0.98;
     const currentlyDocked = rawProgress >= 0.98;
@@ -55,20 +57,20 @@ export default function HomePage() {
     }
 
     if (travelLogoRef.current) {
-      // Gentle parabolic arc lift
-      const arcLift = Math.sin(p * Math.PI) * -18;
+      // Elegant 3D parabolic curved trajectory: arc lift + subtle outward curve sway
+      const arcLift = Math.sin(p * Math.PI) * -52;
+      const curveSwayX = Math.sin(p * Math.PI) * -38;
 
       // Start coordinates (Hero title viewport center)
       const startX = heroRect.left + heroRect.width / 2;
       const startY = heroRect.top + heroRect.height / 2;
 
       // Target coordinates (Navbar logo text center)
-      // Logo image is 36px wide + 10px gap + half of text width (~50px) = +96px from navRect.left
       const targetX = navRect.left + 96;
       const targetY = navRect.top + navRect.height / 2;
 
       // Smooth curved arc coordinates (X, Y)
-      const currentX = startX + (targetX - startX) * p;
+      const currentX = startX + (targetX - startX) * p + curveSwayX;
       const currentY = startY + (targetY - startY) * p + arcLift;
 
       // Font size scaling: from Hero size down to Navbar docked font size (23.2px / 1.45rem)
@@ -76,11 +78,17 @@ export default function HomePage() {
       const targetFontSize = 23.2;
       const currentFontSize = heroFontSize + (targetFontSize - heroFontSize) * p;
 
-      // Smoothly blend color from pure white #ffffff to dark obsidian #1f2123
-      const r = Math.round(255 - (255 - 31) * Math.pow(p, 0.6));
-      const g = Math.round(255 - (255 - 33) * Math.pow(p, 0.6));
-      const b = Math.round(255 - (255 - 35) * Math.pow(p, 0.6));
-      const colorRgb = `rgb(${r}, ${g}, ${b})`;
+      // COLOR: Stays crisp pure white (#ffffff) during travel, turns black only when docking into navbar (p >= 0.82)
+      let colorRgb = "rgb(255, 255, 255)";
+      let shadowAlpha = 0.95;
+      if (p > 0.82) {
+        const dockT = (p - 0.82) / 0.18; // 0 to 1 in final 18% of travel
+        const r = Math.round(255 - (255 - 31) * dockT);
+        const g = Math.round(255 - (255 - 33) * dockT);
+        const b = Math.round(255 - (255 - 35) * dockT);
+        colorRgb = `rgb(${r}, ${g}, ${b})`;
+        shadowAlpha = 0.95 * (1 - dockT);
+      }
 
       // Direct zero-jitter GPU compositor style updates
       const style = travelLogoRef.current.style;
@@ -101,7 +109,7 @@ export default function HomePage() {
       style.opacity = currentlyTraveling ? "1" : "0";
       style.background = "none";
       style.webkitTextFillColor = colorRgb;
-      style.filter = `drop-shadow(0 ${12 - 10 * p}px ${25 - 20 * p}px rgba(0, 0, 0, ${0.85 - 0.65 * p}))`;
+      style.filter = `drop-shadow(0 ${15 * (1 - p * 0.5)}px ${30 * (1 - p * 0.5)}px rgba(0, 0, 0, ${shadowAlpha}))`;
     }
   }, []);
 
