@@ -270,7 +270,7 @@ export default function InterviewPrep() {
     }
   };
 
-  const handleEndSessionEarly = () => {
+  const handleEndSession = () => {
     if (isRecording && recognitionRef.current) {
       recognitionRef.current.stop();
       setIsRecording(false);
@@ -280,14 +280,15 @@ export default function InterviewPrep() {
       setIsSpeaking(false);
     }
 
-    if (session?.answers && session.answers.length > 0) {
-      toast.success('Interview ended. Scorecard generated for completed questions!');
-      setViewState('completed');
-    } else {
-      toast('Interview session ended', { icon: '⏹️' });
-      setViewState('config');
-      setSession(null);
-    }
+    setSession(null);
+    setCurrentAnswerText('');
+    setLatestEvaluation(null);
+    setMockMessages([]);
+    setMockInput('');
+    setAnswerSeconds(0);
+    setViewState('config');
+    toast.success('Interview session ended. All session data cleared.');
+    fetchHistory();
   };
 
   const handleInsertSTAR = (part) => {
@@ -405,10 +406,7 @@ export default function InterviewPrep() {
             </button>
             {viewState !== 'config' && (
               <button
-                onClick={() => {
-                  setViewState('config');
-                  setSession(null);
-                }}
+                onClick={handleEndSession}
                 style={styles.outlineBtn}
               >
                 <RotateCcw size={15} /> New Session
@@ -662,9 +660,9 @@ export default function InterviewPrep() {
               </div>
               <button
                 type="button"
-                onClick={handleEndSessionEarly}
+                onClick={handleEndSession}
                 style={styles.endSessionBtn}
-                title="End interview session and view scorecard"
+                title="End interview session and clear data"
               >
                 End Session
               </button>
@@ -752,7 +750,7 @@ export default function InterviewPrep() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                     <button
                       type="button"
-                      onClick={handleEndSessionEarly}
+                      onClick={handleEndSession}
                       style={styles.outlineBtnSmall}
                     >
                       Exit / End Session
@@ -854,10 +852,10 @@ export default function InterviewPrep() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem' }}>
                     <button
                       type="button"
-                      onClick={handleEndSessionEarly}
+                      onClick={handleEndSession}
                       style={styles.outlineBtnSmall}
                     >
-                      Finish & View Scorecard
+                      Exit Session
                     </button>
                     {session.currentQuestionIndex < session.totalQuestions - 1 ? (
                       <button onClick={handleNextQuestion} style={styles.primaryLaunchBtnInline}>
@@ -886,8 +884,8 @@ export default function InterviewPrep() {
                 Live Mock Interviewer — {session.role} ({session.interviewType})
               </span>
             </div>
-            <button onClick={handleEndSessionEarly} style={styles.endSessionBtn}>
-              End Session & View Scorecard
+            <button onClick={handleEndSession} style={styles.endSessionBtn}>
+              End Session & Clear
             </button>
           </div>
 
@@ -1047,10 +1045,7 @@ export default function InterviewPrep() {
           {/* Actions */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1.5rem' }}>
             <button
-              onClick={() => {
-                setViewState('config');
-                setSession(null);
-              }}
+              onClick={handleEndSession}
               style={styles.primaryLaunchBtnInline}
             >
               <RotateCcw size={16} /> Start Another Interview
