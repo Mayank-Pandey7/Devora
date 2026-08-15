@@ -120,7 +120,18 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      // 3. If Clerk is still initializing, keep loading true
+      // 3. If neither token nor Clerk is signed in, clear any stale cached session
+      if (!token && isClerkLoaded && !isSignedIn) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('devora_user');
+        if (isMounted) {
+          setUser(null);
+          setLoading(false);
+        }
+        return;
+      }
+
+      // 4. If Clerk is still initializing, keep loading true
       if (!isClerkLoaded) {
         return;
       }
@@ -140,6 +151,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const res = await API.post('/auth/login', { email, password });
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem('devora_user', JSON.stringify(res.data.user));
     setUser(res.data.user);
     return res.data;
   };
@@ -147,6 +159,7 @@ export const AuthProvider = ({ children }) => {
   const googleLogin = async (payload) => {
     const res = await API.post('/auth/google', payload);
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem('devora_user', JSON.stringify(res.data.user));
     setUser(res.data.user);
     return res.data;
   };
@@ -154,7 +167,10 @@ export const AuthProvider = ({ children }) => {
   const clerkLogin = async (clerkUserData) => {
     const res = await API.post('/auth/clerk', clerkUserData);
     localStorage.setItem('token', res.data.token);
-    setUser(res.data.user);
+    if (res.data.user) {
+      localStorage.setItem('devora_user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
+    }
     return res.data;
   };
 
@@ -166,6 +182,7 @@ export const AuthProvider = ({ children }) => {
   const verifyOtp = async (email, otp) => {
     const res = await API.post('/auth/verify-otp', { email, otp });
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem('devora_user', JSON.stringify(res.data.user));
     setUser(res.data.user);
     return res.data;
   };
@@ -173,16 +190,18 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, targetRole = 'Full Stack Developer') => {
     const res = await API.post('/auth/register', { name, email, password, targetRole });
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem('devora_user', JSON.stringify(res.data.user));
     setUser(res.data.user);
     return res.data;
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('devora_user');
     setUser(null);
     if (clerk && typeof clerk.signOut === 'function') {
       try {
-        clerk.signOut();
+        await clerk.signOut();
       } catch (e) {}
     }
   };

@@ -8,10 +8,10 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     toast.success('Logged out from Devora');
-    navigate('/');
+    navigate('/', { replace: true });
   };
 
   const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'D';
