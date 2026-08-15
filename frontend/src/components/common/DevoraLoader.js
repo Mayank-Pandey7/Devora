@@ -10,9 +10,9 @@ export default function DevoraLoader({ message = 'Loading Devora...' }) {
         justifyContent: 'center',
         height: '100vh',
         width: '100vw',
-        background: '#090d16',
-        backgroundImage: 'radial-gradient(circle at 50% 45%, rgba(245, 200, 66, 0.09) 0%, rgba(9, 13, 22, 1) 75%)',
-        color: '#f8fafc',
+        background: '#ffffff',
+        backgroundImage: 'radial-gradient(circle at 50% 45%, rgba(245, 200, 66, 0.14) 0%, rgba(255, 255, 255, 1) 75%)',
+        color: '#1f2123',
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         position: 'fixed',
         inset: 0,
@@ -20,15 +20,15 @@ export default function DevoraLoader({ message = 'Loading Devora...' }) {
       }}
     >
       {/* Devora Logo with Breathing Glow */}
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.75rem' }}>
-        {/* Ambient Glow Aura */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        {/* Ambient Warm Glow Aura */}
         <div
           style={{
             position: 'absolute',
-            width: '90px',
-            height: '90px',
+            width: '96px',
+            height: '96px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(245, 200, 66, 0.35) 0%, rgba(245, 200, 66, 0) 70%)',
+            background: 'radial-gradient(circle, rgba(245, 200, 66, 0.4) 0%, rgba(245, 200, 66, 0) 70%)',
             animation: 'devoraGlowAura 2s ease-in-out infinite alternate',
           }}
         />
@@ -43,30 +43,30 @@ export default function DevoraLoader({ message = 'Loading Devora...' }) {
             objectFit: 'contain',
             position: 'relative',
             zIndex: 2,
-            filter: 'drop-shadow(0 8px 24px rgba(245, 200, 66, 0.25))',
+            filter: 'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.08))',
             animation: 'devoraLogoPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate',
           }}
         />
       </div>
 
       {/* Brand & Loading Status */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
         <span
           style={{
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 800,
-            fontSize: '1.25rem',
+            fontSize: '1.3rem',
             letterSpacing: '0.12em',
-            color: '#ffffff',
+            color: '#1f2123',
           }}
         >
           DEVORA
         </span>
         <span
           style={{
-            fontSize: '0.86rem',
+            fontSize: '0.88rem',
             fontWeight: 600,
-            color: '#94a3b8',
+            color: '#5b5e64',
             letterSpacing: '0.01em',
           }}
         >
@@ -77,9 +77,9 @@ export default function DevoraLoader({ message = 'Loading Devora...' }) {
       {/* Sleek Line Progress Bar */}
       <div
         style={{
-          width: '130px',
+          width: '140px',
           height: '3px',
-          background: 'rgba(255, 255, 255, 0.08)',
+          background: 'rgba(0, 0, 0, 0.06)',
           borderRadius: '999px',
           marginTop: '1.5rem',
           overflow: 'hidden',
@@ -92,7 +92,7 @@ export default function DevoraLoader({ message = 'Loading Devora...' }) {
             top: 0,
             bottom: 0,
             width: '45%',
-            background: 'linear-gradient(90deg, #f5c842, #e5a820)',
+            background: 'linear-gradient(90deg, #1f2123, #f5c842)',
             borderRadius: '999px',
             animation: 'devoraProgressSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite',
           }}
@@ -104,7 +104,7 @@ export default function DevoraLoader({ message = 'Loading Devora...' }) {
         @keyframes devoraLogoPulse {
           0% {
             transform: scale(0.95);
-            opacity: 0.88;
+            opacity: 0.9;
           }
           100% {
             transform: scale(1.05);
@@ -114,11 +114,11 @@ export default function DevoraLoader({ message = 'Loading Devora...' }) {
         @keyframes devoraGlowAura {
           0% {
             transform: scale(0.85);
-            opacity: 0.4;
+            opacity: 0.45;
           }
           100% {
             transform: scale(1.35);
-            opacity: 0.9;
+            opacity: 0.95;
           }
         }
         @keyframes devoraProgressSlide {
