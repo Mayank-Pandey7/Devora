@@ -427,10 +427,10 @@ export default function ResumeAnalyzer() {
                 {analysis.atsScore}
               </div>
               <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1f2123', margin: 0 }}>
                   ATS Compatibility Score
                 </h2>
-                <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '4px 0 0' }}>
+                <p style={{ fontSize: '0.85rem', color: '#5b5e64', margin: '4px 0 0' }}>
                   {analysis.fileName} • Target: {targetRole}
                 </p>
               </div>
@@ -438,12 +438,12 @@ export default function ResumeAnalyzer() {
 
             <div style={styles.scoreHeroMetrics}>
               <div style={styles.scoreMiniPill}>
-                <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Structure</span>
-                <span style={{ fontWeight: 700, color: '#f8fafc' }}>{analysis.structureScore || 85}%</span>
+                <span style={{ color: '#5b5e64', fontSize: '0.75rem' }}>Structure</span>
+                <span style={{ fontWeight: 700, color: '#1f2123' }}>{analysis.structureScore || 85}%</span>
               </div>
               <div style={styles.scoreMiniPill}>
-                <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Readability</span>
-                <span style={{ fontWeight: 700, color: '#f8fafc' }}>{analysis.readabilityScore || 88}%</span>
+                <span style={{ color: '#5b5e64', fontSize: '0.75rem' }}>Readability</span>
+                <span style={{ fontWeight: 700, color: '#1f2123' }}>{analysis.readabilityScore || 88}%</span>
               </div>
             </div>
           </div>
@@ -479,8 +479,8 @@ export default function ResumeAnalyzer() {
 
               {/* Missing Skills (Crucial) */}
               {analysis.missingSkills?.length > 0 && (
-                <div style={{ marginTop: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid #1e293b' }}>
-                  <div style={{ ...styles.skillCategoryTitle, color: '#f87171' }}>
+                <div style={{ marginTop: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid #e4e6ea' }}>
+                  <div style={{ ...styles.skillCategoryTitle, color: '#dc2626' }}>
                     <AlertTriangle size={14} /> Recommended Skills To Add (Keyword Gap)
                   </div>
                   <div style={styles.tagWrap}>
@@ -496,7 +496,7 @@ export default function ResumeAnalyzer() {
           {/* Strengths & Weaknesses 2-Column */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
             <div style={styles.card}>
-              <h3 style={{ ...styles.cardSubTitle, color: '#4ade80', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h3 style={{ ...styles.cardSubTitle, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <CheckCircle2 size={16} /> Key Resume Strengths
               </h3>
               <ul style={styles.evalList}>
@@ -507,7 +507,7 @@ export default function ResumeAnalyzer() {
             </div>
 
             <div style={styles.card}>
-              <h3 style={{ ...styles.cardSubTitle, color: '#f87171', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h3 style={{ ...styles.cardSubTitle, color: '#dc2626', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <AlertTriangle size={16} /> Critical Areas To Improve
               </h3>
               <ul style={styles.evalList}>
@@ -527,7 +527,7 @@ export default function ResumeAnalyzer() {
               {analysis.suggestions?.map((s, i) => (
                 <div key={i} style={styles.suggestionItem}>
                   <div style={styles.suggestionNum}>{i + 1}</div>
-                  <div style={{ fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.5 }}>{s}</div>
+                  <div style={{ fontSize: '0.92rem', color: '#1f2123', lineHeight: 1.5, fontWeight: 500 }}>{s}</div>
                 </div>
               ))}
             </div>
@@ -550,20 +550,20 @@ export default function ResumeAnalyzer() {
                   return (
                     <div key={key} style={styles.auditCard}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.88rem', color: '#f8fafc' }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#1f2123' }}>
                           {labelMap[key] || key}
                         </span>
                         <span
                           style={{
                             ...styles.statusPill,
                             background: val.status === 'good' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 179, 8, 0.15)',
-                            color: val.status === 'good' ? '#4ade80' : '#facc15'
+                            color: val.status === 'good' ? '#15803d' : '#b45309'
                           }}
                         >
                           {val.score}%
                         </span>
                       </div>
-                      <p style={{ fontSize: '0.78rem', color: '#94a3b8', margin: 0 }}>
+                      <p style={{ fontSize: '0.82rem', color: '#5b5e64', margin: 0, lineHeight: 1.45 }}>
                         {val.feedback}
                       </p>
                     </div>
@@ -648,10 +648,10 @@ export default function ResumeAnalyzer() {
                     {jobMatchResult.jobMatchScore}%
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#1f2123', margin: 0 }}>
                       Job Match Alignment Score
                     </h3>
-                    <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '4px 0 0' }}>
+                    <p style={{ fontSize: '0.85rem', color: '#5b5e64', margin: '4px 0 0' }}>
                       {jobMatchResult.jobMatchScore >= 80 ? 'High probability of interview callback' : 'Moderate alignment — add missing keywords'}
                     </p>
                   </div>
@@ -661,7 +661,7 @@ export default function ResumeAnalyzer() {
               {/* Matched vs Missing Skills */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 <div style={styles.card}>
-                  <h4 style={{ ...styles.cardSubTitle, color: '#4ade80', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <h4 style={{ ...styles.cardSubTitle, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <CheckCircle2 size={16} /> Matched Skills In Your Resume
                   </h4>
                   <div style={styles.tagWrap}>
@@ -672,7 +672,7 @@ export default function ResumeAnalyzer() {
                 </div>
 
                 <div style={styles.card}>
-                  <h4 style={{ ...styles.cardSubTitle, color: '#f87171', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <h4 style={{ ...styles.cardSubTitle, color: '#dc2626', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <AlertTriangle size={16} /> Missing Skills In Job Posting
                   </h4>
                   <div style={styles.tagWrap}>
@@ -686,14 +686,14 @@ export default function ResumeAnalyzer() {
               {/* Recommendations */}
               <div style={styles.card}>
                 <h4 style={styles.cardTitle}>Tailoring Recommendations</h4>
-                <p style={{ fontSize: '0.9rem', color: '#cbd5e1', lineHeight: 1.6, marginBottom: '1rem' }}>
+                <p style={{ fontSize: '0.9rem', color: '#374151', lineHeight: 1.6, marginBottom: '1rem' }}>
                   {jobMatchResult.experienceMatch}
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {jobMatchResult.recommendations?.map((r, i) => (
                     <div key={i} style={styles.suggestionItem}>
                       <div style={styles.suggestionNum}>•</div>
-                      <div style={{ fontSize: '0.88rem', color: '#e2e8f0' }}>{r}</div>
+                      <div style={{ fontSize: '0.9rem', color: '#1f2123', fontWeight: 500 }}>{r}</div>
                     </div>
                   ))}
                 </div>
@@ -708,7 +708,7 @@ export default function ResumeAnalyzer() {
         <div style={styles.modalOverlay} onClick={() => setHistoryOpen(false)}>
           <div style={styles.historyDrawer} onClick={(e) => e.stopPropagation()}>
             <div style={styles.drawerHeader}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1f2123' }}>
                 Saved Resume Analyses
               </h3>
               <button onClick={() => setHistoryOpen(false)} style={styles.closeBtn}>×</button>
@@ -728,10 +728,10 @@ export default function ResumeAnalyzer() {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.92rem' }}>
+                        <div style={{ fontWeight: 700, color: '#1f2123', fontSize: '0.92rem' }}>
                           {item.fileName}
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px' }}>
+                        <div style={{ fontSize: '0.78rem', color: '#5b5e64', marginTop: '2px' }}>
                           {item.skillsDetected?.technical?.length || 0} skills extracted
                         </div>
                       </div>
@@ -739,7 +739,7 @@ export default function ResumeAnalyzer() {
                         style={{
                           ...styles.historyScorePill,
                           background: item.atsScore >= 80 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-                          color: item.atsScore >= 80 ? '#4ade80' : '#a5b4fc'
+                          color: item.atsScore >= 80 ? '#15803d' : '#4338ca'
                         }}
                       >
                         ATS {item.atsScore}%
