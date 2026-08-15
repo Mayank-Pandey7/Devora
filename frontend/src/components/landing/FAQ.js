@@ -28,16 +28,16 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section id="faq" style={{ padding: "5rem 1.5rem", background: "linear-gradient(145deg, #f6f5f1 0%, #faf6e9 50%, #fef3cf 100%)", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
+    <section id="faq" style={{ padding: "5rem 1.5rem", background: "linear-gradient(145deg, #f6f5f1 0%, #faf6e9 50%, #fef3cf 100%)", fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#1f2123", background: "#f5c842", padding: "4px 12px", borderRadius: "20px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#1f2123", background: "#f5c842", padding: "5px 14px", borderRadius: "20px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             FREQUENTLY ASKED QUESTIONS
           </span>
-          <h2 style={{ fontSize: "2.5rem", fontWeight: 800, color: "#1f2123", margin: "0.85rem 0 0.5rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
+          <h2 style={{ fontSize: "2.4rem", fontWeight: 800, color: "#1f2123", margin: "1rem 0 0.6rem 0", fontFamily: "'Space Grotesk', -apple-system, sans-serif", letterSpacing: "-0.02em" }}>
             Everything You Need to Know
           </h2>
-          <p style={{ fontSize: "1rem", color: "#71757c" }}>
+          <p style={{ fontSize: "1.05rem", color: "#374151", fontWeight: 500 }}>
             Got questions about Devora? We've got answers.
           </p>
         </div>
@@ -50,31 +50,31 @@ export default function FAQ() {
                 key={idx}
                 style={{
                   background: "#ffffff",
-                  border: "1px solid rgba(0,0,0,0.05)",
+                  border: "1px solid rgba(0,0,0,0.06)",
                   borderRadius: "20px",
                   overflow: "hidden",
-                  boxShadow: "0 4px 15px rgba(0, 0, 0, 0.02)",
+                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.03)",
                   transition: "all 0.15s ease"
                 }}
               >
                 <div
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
                   style={{
-                    padding: "1.25rem 1.75rem",
+                    padding: "1.35rem 1.75rem",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                     cursor: "pointer"
                   }}
                 >
-                  <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "#1f2123" }}>
+                  <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "#1f2123", fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}>
                     {faq.q}
                   </span>
-                  {isOpen ? <ChevronUp size={18} color="#1f2123" /> : <ChevronDown size={18} color="#71757c" />}
+                  {isOpen ? <ChevronUp size={18} color="#1f2123" /> : <ChevronDown size={18} color="#6b7280" />}
                 </div>
 
                 {isOpen && (
-                  <div style={{ padding: "0 1.75rem 1.5rem 1.75rem", color: "#5b5e64", fontSize: "0.9rem", lineHeight: 1.6, borderTop: "1px solid #f0f2f5", paddingTop: "1rem" }}>
+                  <div style={{ padding: "0 1.75rem 1.5rem 1.75rem", color: "#374151", fontSize: "0.94rem", lineHeight: 1.65, borderTop: "1px solid #f0f2f5", paddingTop: "1rem", fontWeight: 500 }}>
                     {faq.a}
                   </div>
                 )}

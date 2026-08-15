@@ -76,10 +76,10 @@ export default function Navbar({ navLogoRef, isDocked, travelProgress = 0 }) {
 
         {/* 2. CENTER SECTION: Standalone Navigation Links Capsule */}
         <div className="sai-nav-island sai-links-island desktop-only">
-          <a href="#interview-prep">Projects</a>
+          <a href="#interview-prep">Interview Prep</a>
           <a href="#resume-analyzer">Resume ATS</a>
           <a href="#how-it-works">How It Works</a>
-          <a href="#ecosystem">Studio</a>
+          <a href="#ecosystem">Ecosystem</a>
           <a href="#faq">FAQ</a>
         </div>
 
@@ -107,10 +107,10 @@ export default function Navbar({ navLogoRef, isDocked, travelProgress = 0 }) {
       {/* MOBILE MENU DROPDOWN */}
       {mobileMenuOpen && (
         <div className="sai-mobile-menu">
-          <a href="#interview-prep" onClick={() => setMobileMenuOpen(false)}>Projects</a>
+          <a href="#interview-prep" onClick={() => setMobileMenuOpen(false)}>Interview Prep</a>
           <a href="#resume-analyzer" onClick={() => setMobileMenuOpen(false)}>Resume ATS</a>
           <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
-          <a href="#ecosystem" onClick={() => setMobileMenuOpen(false)}>Studio</a>
+          <a href="#ecosystem" onClick={() => setMobileMenuOpen(false)}>Ecosystem</a>
           <a href="#faq" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
           <div className="sai-mobile-menu-actions">
             <Link to="/login" className="sai-login-btn" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>

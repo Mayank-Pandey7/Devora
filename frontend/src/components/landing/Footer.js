@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer style={{ background: "#ffffff", borderTop: "1px solid rgba(0,0,0,0.06)", padding: "4rem 1.5rem 2.5rem", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
+    <footer style={{ background: "#ffffff", borderTop: "1px solid rgba(0,0,0,0.06)", padding: "4rem 1.5rem 2.5rem", fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2.5rem", marginBottom: "3rem" }}>
           {/* Brand Col */}
@@ -14,7 +14,7 @@ export default function Footer() {
                 Devora
               </span>
             </div>
-            <p style={{ fontSize: "0.85rem", color: "#71757c", lineHeight: 1.6, maxWidth: "280px" }}>
+            <p style={{ fontSize: "0.88rem", color: "#4b5563", lineHeight: 1.6, maxWidth: "280px", fontWeight: 500 }}>
               Build better. Interview smarter. Get hired. An AI-powered career copilot for modern developers.
             </p>
           </div>
@@ -25,10 +25,10 @@ export default function Footer() {
               Features
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-              <a href="#interview-prep" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>AI Interview Prep</a>
-              <a href="#resume-analyzer" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>ATS Resume Scanner</a>
-              <a href="#ecosystem" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Tech Ecosystem</a>
-              <Link to="/dashboard" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Career Dashboard</Link>
+              <a href="#interview-prep" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>AI Interview Prep</a>
+              <a href="#resume-analyzer" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>ATS Resume Scanner</a>
+              <a href="#ecosystem" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Tech Ecosystem</a>
+              <Link to="/dashboard" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Career Dashboard</Link>
             </div>
           </div>
 
@@ -38,21 +38,21 @@ export default function Footer() {
               Platform
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-              <a href="#how-it-works" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>How It Works</a>
-              <a href="#faq" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>FAQ</a>
-              <Link to="/login" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Sign In</Link>
-              <Link to="/register" style={{ color: "#5b5e64", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Create Account</Link>
+              <a href="#how-it-works" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>How It Works</a>
+              <a href="#faq" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>FAQ</a>
+              <Link to="/login" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Sign In</Link>
+              <Link to="/register" style={{ color: "#374151", fontSize: "0.88rem", textDecoration: "none", fontWeight: 600 }}>Create Account</Link>
             </div>
           </div>
         </div>
 
         <div style={{ borderTop: "1px solid #f0f2f5", paddingTop: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-          <p style={{ fontSize: "0.8rem", color: "#71757c", margin: 0 }}>
-            © {new Date().getFullYear()} Devora. All rights reserved. Build better. Interview smarter. Get hired.
+          <p style={{ fontSize: "0.88rem", color: "#374151", margin: 0, fontWeight: 600 }}>
+            © 2026 Devora. Developed and designed by Mayank Pandey
           </p>
           <div style={{ display: "flex", gap: "1.5rem" }}>
-            <span style={{ fontSize: "0.8rem", color: "#71757c" }}>Privacy Policy</span>
-            <span style={{ fontSize: "0.8rem", color: "#71757c" }}>Terms of Service</span>
+            <span style={{ fontSize: "0.82rem", color: "#6b7280", fontWeight: 500 }}>Privacy Policy</span>
+            <span style={{ fontSize: "0.82rem", color: "#6b7280", fontWeight: 500 }}>Terms of Service</span>
           </div>
         </div>
       </div>

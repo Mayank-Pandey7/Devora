@@ -155,7 +155,7 @@ export default function HomePage() {
 
       {/* ─── DEVORA DASHBOARD WARM CHAMPAGNE & PORCELAIN DESIGN SYSTEM ─── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Playpen+Sans:wght@100..800&family=Space+Grotesk:wght@500;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;600;700;900&display=swap');
 
         :root, body, body.light, body.light-mode, body.dark, body.dark-mode {
           --sai-bg: linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%) !important;
@@ -163,16 +163,16 @@ export default function HomePage() {
           --sai-dark-bg: #f6f5f1 !important;
           --sai-dark-card: #ffffff !important;
           --sai-text-primary: #1f2123 !important;
-          --sai-text-secondary: #5b5e64 !important;
-          --sai-text-muted: #71757c !important;
+          --sai-text-secondary: #374151 !important;
+          --sai-text-muted: #4b5563 !important;
           --sai-accent: #1f2123;
           --sai-accent-hover: #000000;
           --sai-accent-gold: #f5c842;
           --sai-accent-soft: rgba(245, 200, 66, 0.15);
           --sai-border: rgba(0, 0, 0, 0.06);
           --sai-dark-border: rgba(0, 0, 0, 0.06);
-          --sai-font-sans: 'Playpen Sans', cursive, sans-serif;
-          --sai-font-display: 'Libre Caslon Text', 'Crimson Pro', Georgia, serif;
+          --sai-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          --sai-font-display: 'Space Grotesk', -apple-system, sans-serif;
           color: #1f2123 !important;
         }
 
@@ -185,9 +185,6 @@ export default function HomePage() {
 
         .devora-landing-content {
           background: transparent !important;
-        }
-          --sai-border: #18181b;
-          --sai-hero-tint: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.08) 40%, transparent 75%);
         }
 
         body.light, body.light-mode {
