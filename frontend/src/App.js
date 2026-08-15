@@ -14,6 +14,8 @@ import ResumeAnalyzer  from './pages/ResumeAnalyzer';
 import Profile         from './pages/Profile';
 import Layout          from './components/Layout/Layout';
 
+import ErrorBoundary   from './components/common/ErrorBoundary';
+
 const ProtectedLayout = () => {
   const { user, loading } = useAuth();
 
@@ -107,25 +109,27 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <ClerkAuthProviderWrapper>
-      <ThemeProvider>
-        <AuthProvider>
-          <Router>
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: {
-                  background: '#0f172a',
-                  color: '#f8fafc',
-                  border: '1px solid #1e293b',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif"
-                }
-              }}
-            />
-            <AppRoutes />
-          </Router>
-        </AuthProvider>
-      </ThemeProvider>
-    </ClerkAuthProviderWrapper>
+    <ErrorBoundary>
+      <ClerkAuthProviderWrapper>
+        <ThemeProvider>
+          <AuthProvider>
+            <Router>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  style: {
+                    background: '#0f172a',
+                    color: '#f8fafc',
+                    border: '1px solid #1e293b',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif"
+                  }
+                }}
+              />
+              <AppRoutes />
+            </Router>
+          </AuthProvider>
+        </ThemeProvider>
+      </ClerkAuthProviderWrapper>
+    </ErrorBoundary>
   );
 }

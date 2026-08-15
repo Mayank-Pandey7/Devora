@@ -4,7 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import DevoraLoader from '../common/DevoraLoader';
 
-const CLERK_PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+// Fallback to provided project key so Vercel deployment never renders without ClerkProvider
+const CLERK_PUBLISHABLE_KEY =
+  process.env.REACT_APP_CLERK_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  'pk_test_dGlkeS1yYXZlbi02Ny5jbGVyay5hY2NvdW50cy5kZXYk';
 
 export function ClerkSSOCallback() {
   const navigate = useNavigate();
@@ -29,10 +33,6 @@ export function ClerkSSOCallback() {
 }
 
 export function ClerkAuthProviderWrapper({ children }) {
-  if (!CLERK_PUBLISHABLE_KEY) {
-    return <>{children}</>;
-  }
-
   return (
     <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
       {children}
