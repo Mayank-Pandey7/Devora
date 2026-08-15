@@ -17,12 +17,12 @@ const TECH_ITEMS = [
 
 export default function TechEcosystem() {
   return (
-    <section id="ecosystem" style={{ padding: "4.5rem 1.5rem", background: "linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%)", fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+    <section id="ecosystem" style={{ padding: "4.5rem 1.5rem", background: "linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%)", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", textAlign: "center" }}>
         <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#1f2123", background: "#f5c842", padding: "5px 14px", borderRadius: "20px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           ENGINEERING DOMAINS & ECOSYSTEM
         </span>
-        <h2 style={{ fontSize: "2.3rem", fontWeight: 800, color: "#1f2123", marginTop: "1rem", marginBottom: "2.5rem", fontFamily: "'Space Grotesk', -apple-system, sans-serif", letterSpacing: "-0.02em" }}>
+        <h2 style={{ fontSize: "2.3rem", fontWeight: 800, color: "#1f2123", marginTop: "1rem", marginBottom: "2.5rem", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
           Built for Modern Engineering Stacks
         </h2>
 

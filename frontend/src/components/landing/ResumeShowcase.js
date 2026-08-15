@@ -4,13 +4,13 @@ import { FileText, Award, AlertTriangle, Sparkles, Briefcase } from "lucide-reac
 
 export default function ResumeShowcase() {
   return (
-    <section id="resume-analyzer" style={{ padding: "5rem 1.5rem", background: "linear-gradient(145deg, #f6f5f1 0%, #faf6e9 50%, #fef3cf 100%)", fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+    <section id="resume-analyzer" style={{ padding: "5rem 1.5rem", background: "linear-gradient(145deg, #f6f5f1 0%, #faf6e9 50%, #fef3cf 100%)", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
           <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#1f2123", background: "#f5c842", padding: "5px 14px", borderRadius: "20px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             AI RESUME ANALYZER & ATS SCANNER
           </span>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: 800, color: "#1f2123", margin: "1rem 0 0.6rem 0", fontFamily: "'Space Grotesk', -apple-system, sans-serif", letterSpacing: "-0.02em" }}>
+          <h2 style={{ fontSize: "2.4rem", fontWeight: 800, color: "#1f2123", margin: "1rem 0 0.6rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
             Beat the ATS Filters Before A Human Ever Reads It
           </h2>
           <p style={{ fontSize: "1.05rem", color: "#374151", maxWidth: "650px", margin: "0 auto", lineHeight: 1.6, fontWeight: 500 }}>
@@ -90,7 +90,7 @@ export default function ResumeShowcase() {
                 <Award size={22} color="#1f2123" />
               </div>
               <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
                   Instant ATS Parsing & Scoring
                 </h3>
                 <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.55, margin: 0, fontWeight: 500 }}>
@@ -104,7 +104,7 @@ export default function ResumeShowcase() {
                 <Briefcase size={22} color="#1f2123" />
               </div>
               <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
                   Job Description Keyword Matcher
                 </h3>
                 <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.55, margin: 0, fontWeight: 500 }}>
@@ -118,7 +118,7 @@ export default function ResumeShowcase() {
                 <Sparkles size={22} color="#f5c842" />
               </div>
               <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#1f2123", margin: "0 0 0.4rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
                   Google XYZ Impact Formulation
                 </h3>
                 <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: 1.55, margin: 0, fontWeight: 500 }}>

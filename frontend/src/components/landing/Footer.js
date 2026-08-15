@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer style={{ background: "#ffffff", borderTop: "1px solid rgba(0,0,0,0.06)", padding: "4rem 1.5rem 2.5rem", fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+    <footer style={{ background: "#ffffff", borderTop: "1px solid rgba(0,0,0,0.06)", padding: "4rem 1.5rem 2.5rem", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2.5rem", marginBottom: "3rem" }}>
           {/* Brand Col */}

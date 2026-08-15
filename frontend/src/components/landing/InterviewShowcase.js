@@ -32,13 +32,13 @@ export default function InterviewShowcase() {
   const currentDemo = DEMO_QUESTIONS[activeTab];
 
   return (
-    <section id="interview-prep" style={{ padding: "5rem 1.5rem", background: "linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%)", fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+    <section id="interview-prep" style={{ padding: "5rem 1.5rem", background: "linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%)", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
           <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#1f2123", background: "#f5c842", padding: "5px 14px", borderRadius: "20px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             AI INTERVIEW PREPARATION
           </span>
-          <h2 style={{ fontSize: "2.4rem", fontWeight: 800, color: "#1f2123", margin: "1rem 0 0.6rem 0", fontFamily: "'Space Grotesk', -apple-system, sans-serif", letterSpacing: "-0.02em" }}>
+          <h2 style={{ fontSize: "2.4rem", fontWeight: 800, color: "#1f2123", margin: "1rem 0 0.6rem 0", fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
             Practice Technical Interviews with an AI Hiring Lead
           </h2>
           <p style={{ fontSize: "1.05rem", color: "#374151", maxWidth: "650px", margin: "0 auto", lineHeight: 1.6, fontWeight: 500 }}>
@@ -105,7 +105,7 @@ export default function InterviewShowcase() {
               <span style={{ fontSize: "0.74rem", fontWeight: 800, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 INTERVIEW QUESTION
               </span>
-              <h3 style={{ fontSize: "1.22rem", fontWeight: 800, color: "#1f2123", marginTop: "4px", lineHeight: 1.45, fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}>
+              <h3 style={{ fontSize: "1.22rem", fontWeight: 800, color: "#1f2123", marginTop: "4px", lineHeight: 1.45, fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
                 {currentDemo.question}
               </h3>
             </div>

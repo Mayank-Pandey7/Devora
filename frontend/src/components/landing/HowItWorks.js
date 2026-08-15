@@ -39,13 +39,13 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" style={{ padding: '5rem 1.5rem', background: "linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%)", fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+    <section id="how-it-works" style={{ padding: '5rem 1.5rem', background: "linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%)", fontFamily: "'Playpen Sans', cursive, sans-serif" }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1f2123', background: '#f5c842', padding: '5px 14px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             HOW DEVORA WORKS
           </span>
-          <h2 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#1f2123', margin: '1rem 0 0.6rem 0', fontFamily: "'Space Grotesk', -apple-system, sans-serif", letterSpacing: "-0.02em" }}>
+          <h2 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#1f2123', margin: '1rem 0 0.6rem 0', fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
             Three Steps to Interview Confidence
           </h2>
           <p style={{ fontSize: '1.05rem', color: '#374151', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
@@ -79,7 +79,7 @@ export default function HowItWorks() {
                   </span>
                 </div>
 
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1f2123', marginBottom: '0.5rem', fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1f2123', marginBottom: '0.5rem', fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif" }}>
                   {s.title}
                 </h3>
                 <p style={{ fontSize: '0.92rem', color: '#4b5563', lineHeight: 1.6, flex: 1, fontWeight: 500 }}>
