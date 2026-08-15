@@ -364,9 +364,9 @@ export default function HomePage() {
           background: rgba(255, 255, 255, 0.08) !important;
           backdrop-filter: blur(28px) saturate(210%) !important;
           -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
-          border: 1px solid rgba(255, 255, 255, 0.18) !important;
+          border: none !important;
           border-radius: 40px;
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
           display: flex;
           align-items: center;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -378,11 +378,11 @@ export default function HomePage() {
         }
 
         .sai-brand-island.brand-docked {
-          background: rgba(255, 255, 255, 0.72) !important;
-          backdrop-filter: blur(28px) saturate(200%) !important;
-          -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
-          border: 1px solid rgba(255, 255, 255, 0.7) !important;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+          background: rgba(255, 255, 255, 0.45) !important;
+          backdrop-filter: blur(32px) saturate(210%) !important;
+          -webkit-backdrop-filter: blur(32px) saturate(210%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.5) !important;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.7) !important;
         }
 
         .sai-brand-island.brand-docked .nav-docked-title {
@@ -479,17 +479,17 @@ export default function HomePage() {
           transform: translateX(4px);
         }
 
-        /* Scrolled State Across the 3 Islands - High-Transparency Frost Glass */
+        /* Scrolled State Across the 3 Islands - Ultra-Transparent Frost Glass */
         .sai-navbar-dock.scrolled {
           top: 12px;
         }
 
         .sai-navbar-dock.scrolled .sai-nav-island {
-          background: rgba(255, 255, 255, 0.68) !important;
-          backdrop-filter: blur(30px) saturate(200%) !important;
-          -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
-          border: 1px solid rgba(255, 255, 255, 0.65) !important;
-          box-shadow: 0 10px 32px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
+          background: rgba(255, 255, 255, 0.42) !important;
+          backdrop-filter: blur(32px) saturate(210%) !important;
+          -webkit-backdrop-filter: blur(32px) saturate(210%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.45) !important;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.7) !important;
         }
 
         .sai-navbar-dock.scrolled .sai-brand-name {
@@ -497,12 +497,12 @@ export default function HomePage() {
         }
 
         .sai-navbar-dock.scrolled .sai-links-island a {
-          color: #374151 !important;
+          color: #1f2123 !important;
           text-shadow: none;
         }
 
         .sai-navbar-dock.scrolled .sai-links-island a:hover {
-          color: #111827 !important;
+          color: #000000 !important;
         }
 
         .sai-navbar-dock.scrolled .sai-login-btn {
@@ -516,18 +516,12 @@ export default function HomePage() {
           box-shadow: 0 8px 25px rgba(245, 200, 66, 0.35) !important;
         }
 
-        .sai-navbar-dock.scrolled .sai-get-started-btn:hover {
-          background: #fcd34d !important;
-          transform: scale(1.08) rotate(2deg) translateY(-1px) !important;
-          box-shadow: 0 14px 40px rgba(245, 200, 66, 0.6) !important;
-        }
-
         .sai-mobile-hamburger {
           pointer-events: auto;
           background: rgba(255, 255, 255, 0.12);
           backdrop-filter: blur(24px) saturate(190%);
           -webkit-backdrop-filter: blur(24px) saturate(190%);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: none;
           color: #ffffff;
           width: 44px;
           height: 44px;
@@ -541,10 +535,10 @@ export default function HomePage() {
         }
 
         .sai-navbar-dock.scrolled .sai-mobile-hamburger {
-          background: rgba(255, 255, 255, 0.72);
-          border: 1px solid rgba(255, 255, 255, 0.7);
+          background: rgba(255, 255, 255, 0.45);
+          border: 1px solid rgba(255, 255, 255, 0.5);
           color: #1f2123;
-          box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.04);
         }
 
         .sai-mobile-menu {
