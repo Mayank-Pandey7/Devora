@@ -270,7 +270,7 @@ export default function InterviewPrep() {
     }
   };
 
-  const handleEndSession = () => {
+  const handleEndSession = async () => {
     if (isRecording && recognitionRef.current) {
       recognitionRef.current.stop();
       setIsRecording(false);
@@ -280,6 +280,13 @@ export default function InterviewPrep() {
       setIsSpeaking(false);
     }
 
+    const currentSessionId = session?._id;
+    if (currentSessionId) {
+      try {
+        await API.post(`/interviews/${currentSessionId}/end`);
+      } catch (e) {}
+    }
+
     setSession(null);
     setCurrentAnswerText('');
     setLatestEvaluation(null);
@@ -287,7 +294,7 @@ export default function InterviewPrep() {
     setMockInput('');
     setAnswerSeconds(0);
     setViewState('config');
-    toast.success('Interview session ended. All session data cleared.');
+    toast.success('Interview session ended. Session closed.');
     fetchHistory();
   };
 
@@ -1120,11 +1127,15 @@ export default function InterviewPrep() {
                       <div
                         style={{
                           ...styles.historyScorePill,
-                          background: (item.overallScore || 0) >= 80 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 200, 66, 0.25)',
-                          color: (item.overallScore || 0) >= 80 ? '#15803d' : '#854d0e'
+                          background: item.overallScore
+                            ? ((item.overallScore >= 80) ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 200, 66, 0.25)')
+                            : '#f1f5f9',
+                          color: item.overallScore
+                            ? ((item.overallScore >= 80) ? '#15803d' : '#854d0e')
+                            : '#64748b'
                         }}
                       >
-                        {item.overallScore ? `${item.overallScore}%` : 'In Progress'}
+                        {item.overallScore ? `${item.overallScore}%` : 'Session Ended'}
                       </div>
                     </div>
                     <div style={{ fontSize: '0.72rem', color: '#71757c', marginTop: '8px' }}>

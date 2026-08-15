@@ -273,7 +273,26 @@ router.post('/:id/mock-message', auth, async (req, res) => {
   }
 });
 
-// ── 6. Delete Interview Session ─────────────────────────────
+// ── 6. End Interview Session ──────────────────────────────
+// POST /api/interviews/:id/end
+router.post('/:id/end', auth, async (req, res) => {
+  try {
+    const session = await InterviewSession.findOne({ _id: req.params.id, userId: req.user._id });
+    if (!session) {
+      return res.status(404).json({ success: false, message: 'Session not found' });
+    }
+
+    session.status = 'ended';
+    await session.save();
+
+    res.json({ success: true, message: 'Interview session ended', session });
+  } catch (err) {
+    console.error('End interview error:', err);
+    res.status(500).json({ success: false, message: 'Failed to end interview session' });
+  }
+});
+
+// ── 7. Delete Interview Session ─────────────────────────────
 // DELETE /api/interviews/:id
 router.delete('/:id', auth, async (req, res) => {
   try {
