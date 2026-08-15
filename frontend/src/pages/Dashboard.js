@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth, API } from '../context/AuthContext';
+import DevoraLoader from '../components/common/DevoraLoader';
 import {
   ArrowUpRight,
   ArrowRight,
@@ -25,15 +26,24 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+const getInitialDashboardCache = () => {
+  try {
+    const cached = sessionStorage.getItem('devora_dashboard_cache');
+    if (cached) return JSON.parse(cached);
+  } catch (e) {}
+  return null;
+};
+
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [stats, setStats] = useState(null);
-  const [activityFeed, setActivityFeed] = useState([]);
-  const [interviewsList, setInterviewsList] = useState([]);
-  const [resumesList, setResumesList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedData = getInitialDashboardCache();
+  const [stats, setStats] = useState(cachedData?.stats || null);
+  const [activityFeed, setActivityFeed] = useState(cachedData?.activityFeed || []);
+  const [interviewsList, setInterviewsList] = useState(cachedData?.interviewsList || []);
+  const [resumesList, setResumesList] = useState(cachedData?.resumesList || []);
+  const [loading, setLoading] = useState(!cachedData?.stats);
   const [openAccordion, setOpenAccordion] = useState('stack');
 
   useEffect(() => {
@@ -48,15 +58,29 @@ export default function Dashboard() {
         API.get('/resumes').catch(() => ({ data: { success: false } }))
       ]);
 
-      if (statsRes.data?.success) {
-        setStats(statsRes.data.stats);
-        setActivityFeed(statsRes.data.activityFeed || []);
+      const newStats = statsRes.data?.success ? statsRes.data.stats : null;
+      const newActivity = statsRes.data?.activityFeed || [];
+      const newInterviews = interviewsRes.data?.interviews || [];
+      const newResumes = resumesRes.data?.analyses || [];
+
+      if (newStats) {
+        setStats(newStats);
+        setActivityFeed(newActivity);
       }
       if (interviewsRes.data?.success) {
-        setInterviewsList(interviewsRes.data.interviews || []);
+        setInterviewsList(newInterviews);
       }
       if (resumesRes.data?.success) {
-        setResumesList(resumesRes.data.analyses || []);
+        setResumesList(newResumes);
+      }
+
+      if (newStats || newInterviews.length > 0 || newResumes.length > 0) {
+        sessionStorage.setItem('devora_dashboard_cache', JSON.stringify({
+          stats: newStats || stats,
+          activityFeed: newActivity,
+          interviewsList: newInterviews,
+          resumesList: newResumes
+        }));
       }
     } catch (err) {
       console.warn('Failed to load dashboard statistics:', err.message);
@@ -135,6 +159,10 @@ export default function Dashboard() {
     if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+
+  if (loading && !stats) {
+    return <DevoraLoader message="Syncing your Devora dashboard..." />;
+  }
 
   return (
     <div style={styles.dashboardContainer}>

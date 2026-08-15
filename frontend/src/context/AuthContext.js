@@ -49,12 +49,14 @@ export const AuthProvider = ({ children }) => {
         try {
           const res = await API.get('/auth/me');
           if (isMounted) {
+            localStorage.setItem('devora_user', JSON.stringify(res.data.user));
             setUser(res.data.user);
             setLoading(false);
           }
           return;
         } catch (e) {
           localStorage.removeItem('token');
+          localStorage.removeItem('devora_user');
         }
       }
 
@@ -62,19 +64,25 @@ export const AuthProvider = ({ children }) => {
       if (isClerkLoaded && isSignedIn && clerkUser) {
         const email = clerkUser.primaryEmailAddress?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress;
         if (email) {
+          const cachedUserStr = localStorage.getItem('devora_user');
+          let cached = null;
+          try {
+            if (cachedUserStr) cached = JSON.parse(cachedUserStr);
+          } catch (e) {}
+
           const optimisticUser = {
-            _id: clerkUser.id,
-            id: clerkUser.id,
+            _id: cached?._id || clerkUser.id,
+            id: cached?.id || clerkUser.id,
             clerkUserId: clerkUser.id,
             name: clerkUser.fullName || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || email.split('@')[0],
             email,
-            avatar: clerkUser.imageUrl,
-            targetRole: 'Full Stack Developer',
-            experienceLevel: 'Mid-Level',
-            skills: ['JavaScript', 'React', 'Node.js'],
-            careerScore: 75,
-            interviewScore: 75,
-            resumeScore: 75,
+            avatar: clerkUser.imageUrl || cached?.avatar,
+            targetRole: cached?.targetRole || 'Full Stack Developer',
+            experienceLevel: cached?.experienceLevel || 'Mid-Level',
+            skills: cached?.skills || [],
+            careerScore: cached?.careerScore || 0,
+            interviewScore: cached?.interviewScore || 0,
+            resumeScore: cached?.resumeScore || 0,
           };
 
           if (isMounted && (!user || user.clerkUserId !== clerkUser.id)) {
@@ -93,6 +101,7 @@ export const AuthProvider = ({ children }) => {
             if (isMounted && res.data?.token) {
               localStorage.setItem('token', res.data.token);
               if (res.data.user) {
+                localStorage.setItem('devora_user', JSON.stringify(res.data.user));
                 setUser(res.data.user);
               }
             }
