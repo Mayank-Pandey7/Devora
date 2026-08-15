@@ -24,7 +24,7 @@ const connectDB = async () => {
   try {
     const db = await mongoose.connect(MONGO_URI);
     isConnected = db.connections[0].readyState === 1;
-    console.log('✅ MongoDB connected successfully');
+    console.log('✅ MongoDB connected successfully to database');
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
   }
@@ -52,12 +52,17 @@ try {
   // Ignored if legacy files are updated
 }
 
+// Health check endpoints for Render and cloud monitors
 app.get('/', (req, res) => {
-  res.json({ message: '🚀 Devora Developer Career API is running!', status: 'OK' });
+  res.json({ message: '🚀 Devora Developer Career API is running!', status: 'OK', environment: process.env.NODE_ENV || 'development' });
 });
 
 app.get('/api', (req, res) => {
   res.json({ message: '🚀 Devora API endpoints active', status: 'OK' });
+});
+
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
 app.use((err, req, res, next) => {
@@ -70,9 +75,14 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  connectDB().then(() => {
-    app.listen(PORT, () => console.log(`🚀 Devora Server running on http://localhost:${PORT}`));
+// On persistent cloud hosts (Render, Heroku, Railway, VPS, Local)
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Devora Server actively listening on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+  });
+
+  connectDB().catch(err => {
+    console.error('❌ Initial MongoDB connection failed:', err.message);
   });
 }
 
