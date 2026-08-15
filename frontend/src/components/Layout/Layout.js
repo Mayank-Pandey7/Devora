@@ -1,9 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import {
-  LogOut
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Layout() {
@@ -16,19 +14,20 @@ export default function Layout() {
     navigate('/');
   };
 
-  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'M';
+  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'D';
   const firstName = user?.name ? user.name.split(' ')[0] : 'Profile';
 
   return (
     <div style={styles.wrapper}>
-      {/* Universal Floating Top Navigation Header across ALL pages */}
+      {/* Universal Floating Top Navigation Header across ALL authenticated pages */}
       <header style={styles.globalTopNav}>
-        <div style={styles.brandPill} onClick={() => navigate('/dashboard')}>
-          <img src="/logo.png" alt="Devora" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
+        {/* Brand Island */}
+        <div style={styles.brandPill} onClick={() => navigate('/dashboard')} title="Devora Dashboard">
+          <img src="/logo.png" alt="Devora Logo" style={styles.brandLogo} />
           <span style={styles.brandText}>Devora</span>
         </div>
 
-        {/* Center Navigation */}
+        {/* Center Navigation Capsule */}
         <nav style={styles.centerNav}>
           <NavLink
             to="/dashboard"
@@ -74,7 +73,7 @@ export default function Layout() {
             <span style={styles.profilePillText}>{firstName}</span>
           </button>
           <button onClick={handleLogout} style={styles.pillLogoutBtn} title="Sign Out">
-            <LogOut size={14} color="#1f2123" />
+            <LogOut size={15} color="#1f2123" />
           </button>
         </div>
       </header>
@@ -95,7 +94,7 @@ const styles = {
     flexDirection: 'column',
     background: 'linear-gradient(145deg, #eef0f3 0%, #f6f5f1 35%, #faf6e9 70%, #fef3cf 100%)',
     color: '#1a1c1e',
-    fontFamily: "'Playpen Sans', cursive, sans-serif",
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
   },
   globalTopNav: {
     display: 'flex',
@@ -109,36 +108,49 @@ const styles = {
     boxSizing: 'border-box',
   },
   brandPill: {
-    padding: '0.5rem 1.4rem',
-    background: 'rgba(255, 255, 255, 0.75)',
-    border: '1px solid rgba(0, 0, 0, 0.08)',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.65rem',
+    padding: '0.45rem 1.15rem',
+    background: 'rgba(255, 255, 255, 0.85)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 0, 0, 0.07)',
     borderRadius: '30px',
     cursor: 'pointer',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)',
+    transition: 'all 0.2s ease',
+  },
+  brandLogo: {
+    width: '30px',
+    height: '30px',
+    objectFit: 'contain',
+    display: 'block',
+    flexShrink: 0,
   },
   brandText: {
-    fontSize: '1.15rem',
+    fontSize: '1.2rem',
     fontWeight: 800,
     color: '#1f2123',
     letterSpacing: '-0.02em',
-    fontFamily: "'Space Grotesk', 'Playpen Sans', sans-serif",
+    fontFamily: "'Space Grotesk', sans-serif",
+    lineHeight: 1,
   },
   centerNav: {
     display: 'flex',
     alignItems: 'center',
-    background: 'rgba(255, 255, 255, 0.75)',
-    border: '1px solid rgba(0, 0, 0, 0.08)',
+    background: 'rgba(255, 255, 255, 0.85)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 0, 0, 0.07)',
     borderRadius: '40px',
     padding: '4px 6px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.02)',
-    backdropFilter: 'blur(10px)',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.03)',
   },
   navItem: {
     padding: '0.5rem 1.25rem',
     borderRadius: '30px',
-    fontSize: '0.85rem',
-    fontWeight: 600,
-    color: '#4b4e54',
+    fontSize: '0.86rem',
+    fontWeight: 700,
+    color: '#5b5e64',
     textDecoration: 'none',
     transition: 'all 0.15s ease',
   },
@@ -146,6 +158,7 @@ const styles = {
     background: '#1f2123',
     color: '#ffffff',
     fontWeight: 700,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
   },
   topRightActions: {
     display: 'flex',
@@ -158,10 +171,11 @@ const styles = {
     gap: '0.6rem',
     padding: '4px 14px 4px 4px',
     background: 'rgba(255, 255, 255, 0.85)',
-    border: '1px solid rgba(0, 0, 0, 0.08)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 0, 0, 0.07)',
     borderRadius: '30px',
     cursor: 'pointer',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)',
     transition: 'all 0.15s ease',
   },
   avatarCircleSmall: {
@@ -175,23 +189,27 @@ const styles = {
     justifyContent: 'center',
     fontSize: '0.85rem',
     fontWeight: 800,
+    overflow: 'hidden',
   },
   profilePillText: {
-    fontSize: '0.85rem',
+    fontSize: '0.86rem',
     fontWeight: 700,
     color: '#1f2123',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
   },
   pillLogoutBtn: {
     width: '38px',
     height: '38px',
     borderRadius: '50%',
     background: 'rgba(255, 255, 255, 0.85)',
-    border: '1px solid rgba(0, 0, 0, 0.08)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 0, 0, 0.07)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)',
+    transition: 'all 0.15s ease',
   },
   mainViewport: {
     flex: 1,
