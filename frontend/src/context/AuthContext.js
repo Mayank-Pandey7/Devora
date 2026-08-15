@@ -199,10 +199,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('devora_user');
     setUser(null);
+    setLoading(false);
     if (clerk && typeof clerk.signOut === 'function') {
       try {
-        await clerk.signOut();
-      } catch (e) {}
+        await clerk.signOut({ redirectUrl: '/' });
+      } catch (e) {
+        console.warn('Clerk sign out notice:', e.message);
+      }
     }
   };
 

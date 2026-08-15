@@ -23,7 +23,7 @@ const ProtectedLayout = () => {
     return <DevoraLoader message="Loading Devora..." />;
   }
 
-  return user ? <Layout /> : <Navigate to="/login" replace />;
+  return user ? <Layout /> : <Navigate to="/" replace />;
 };
 
 function AppRoutes() {
