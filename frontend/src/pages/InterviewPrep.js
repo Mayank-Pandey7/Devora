@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth, API } from '../context/AuthContext';
 import {
   Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
   Play,
   CheckCircle2,
   AlertCircle,
@@ -19,7 +22,11 @@ import {
   ChevronRight,
   BookOpen,
   Check,
-  RotateCcw
+  RotateCcw,
+  Code,
+  List,
+  Flame,
+  CheckSquare
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -71,9 +78,108 @@ export default function InterviewPrep() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyList, setHistoryList] = useState([]);
 
+  // Voice Recognition & Audio Features
+  const [isRecording, setIsRecording] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const recognitionRef = useRef(null);
+
+  // Answer Timer / Pace Tracker
+  const [answerSeconds, setAnswerSeconds] = useState(0);
+  const timerRef = useRef(null);
+
   useEffect(() => {
     fetchHistory();
   }, []);
+
+  // Timer logic for active Q&A
+  useEffect(() => {
+    if (viewState === 'active-qa' && !latestEvaluation) {
+      setAnswerSeconds(0);
+      timerRef.current = setInterval(() => {
+        setAnswerSeconds((s) => s + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [viewState, session?.currentQuestionIndex, latestEvaluation]);
+
+  // Web Speech API Voice-to-Text Setup
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (viewState === 'active-mock') {
+          setMockInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        } else {
+          setCurrentAnswerText((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Speech recognition notice:', event.error);
+        setIsRecording(false);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, [viewState]);
+
+  const toggleVoiceRecording = () => {
+    if (!recognitionRef.current) {
+      return toast.error('Speech recognition is not supported in this browser. Try Chrome or Edge.');
+    }
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+      toast.success('Voice dictation stopped');
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsRecording(true);
+        toast.success('Listening... Speak your answer out loud!');
+      } catch (err) {
+        setIsRecording(false);
+      }
+    }
+  };
+
+  const handleSpeakQuestion = (text) => {
+    if (!('speechSynthesis' in window)) {
+      return toast.error('Speech synthesis not supported in this browser.');
+    }
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const fetchHistory = async () => {
     try {
@@ -123,6 +229,11 @@ export default function InterviewPrep() {
       return toast.error('Please write your response before submitting.');
     }
 
+    if (isRecording && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+
     setSubmittingAnswer(true);
     try {
       const currentQ = session.questions[session.currentQuestionIndex];
@@ -153,6 +264,24 @@ export default function InterviewPrep() {
   const handleNextQuestion = () => {
     setLatestEvaluation(null);
     setCurrentAnswerText('');
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  };
+
+  const handleInsertSTAR = (part) => {
+    const templates = {
+      S: '\n**Situation:** When working on [project/feature]...',
+      T: '\n**Task:** My objective was to [solve problem / improve metric]...',
+      A: '\n**Action:** I implemented [architecture / algorithm / solution] by...',
+      R: '\n**Result:** This improved [latency / throughput / reliability] by [X%]...'
+    };
+    setCurrentAnswerText((prev) => prev + (templates[part] || ''));
+  };
+
+  const handleInsertCodeBlock = () => {
+    setCurrentAnswerText((prev) => prev + '\n```javascript\n// Write your code implementation here\n\n```\n');
   };
 
   const handleSendMockMessage = async (e) => {
@@ -162,7 +291,11 @@ export default function InterviewPrep() {
     const userText = mockInput;
     setMockInput('');
 
-    // Optimistic user message
+    if (isRecording && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+
     const updatedMessages = [
       ...mockMessages,
       { speaker: 'user', message: userText, timestamp: new Date() }
@@ -180,7 +313,7 @@ export default function InterviewPrep() {
         setSession(res.data.session);
 
         if (res.data.isFinished) {
-          toast.success('Mock interview session finished! Generating scorecard...');
+          toast.success('Mock interview finished! Generating scorecard...');
           setViewState('completed');
         }
         fetchHistory();
@@ -219,101 +352,113 @@ export default function InterviewPrep() {
     }
   };
 
-  const completedCount = historyList.filter(h => h.status === 'completed').length;
-  const avgScore = historyList.length > 0
-    ? Math.round(historyList.filter(h => h.overallScore).reduce((acc, h) => acc + h.overallScore, 0) / (historyList.filter(h => h.overallScore).length || 1))
-    : 0;
+  const formatTimer = (totalSeconds) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const completedCount = historyList.filter((h) => h.status === 'completed').length;
+  const avgScore =
+    historyList.length > 0
+      ? Math.round(
+          historyList.filter((h) => h.overallScore).reduce((acc, h) => acc + h.overallScore, 0) /
+            (historyList.filter((h) => h.overallScore).length || 1)
+        )
+      : 0;
 
   return (
     <div style={styles.interviewContainer}>
-      {/* ── HERO GREETING & METRIC PILL ROW (Dashboard text layout) ── */}
-        <section style={styles.heroSection}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      {/* ── HERO GREETING & METRIC PILL ROW ── */}
+      <section style={styles.heroSection}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
             <h1 style={styles.greetingTitle}>AI Interview Practice</h1>
-            
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <p style={{ fontSize: '0.88rem', color: '#5b5e64', margin: '4px 0 0' }}>
+              Real-time speech-to-text dictation, live audio questions, and automated STAR evaluations.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button onClick={() => setHistoryOpen(true)} style={styles.secondaryBtn}>
+              <History size={15} /> Past Sessions ({historyList.length})
+            </button>
+            {viewState !== 'config' && (
               <button
-                onClick={() => setHistoryOpen(true)}
-                style={styles.secondaryBtn}
+                onClick={() => {
+                  setViewState('config');
+                  setSession(null);
+                }}
+                style={styles.outlineBtn}
               >
-                <History size={15} /> Past Sessions ({historyList.length})
+                <RotateCcw size={15} /> New Session
               </button>
-              {viewState !== 'config' && (
-                <button
-                  onClick={() => {
-                    setViewState('config');
-                    setSession(null);
-                  }}
-                  style={styles.outlineBtn}
-                >
-                  <RotateCcw size={15} /> New Session
-                </button>
-              )}
+            )}
+          </div>
+        </div>
+
+        <div style={styles.heroMetricsBar}>
+          {/* Segmented Metric Group */}
+          <div style={styles.segmentedMetricGroup}>
+            <div style={styles.segmentColumn}>
+              <span style={styles.segmentLabel}>Target Role</span>
+              <div style={styles.segmentPillDark}>
+                <span>{role || user?.targetRole || 'Full Stack'}</span>
+              </div>
+            </div>
+
+            <div style={styles.segmentColumn}>
+              <span style={styles.segmentLabel}>Difficulty</span>
+              <div style={styles.segmentPillYellow}>
+                <span>{difficulty}</span>
+              </div>
+            </div>
+
+            <div style={styles.segmentColumnWide}>
+              <span style={styles.segmentLabel}>Selected Topic</span>
+              <div style={styles.diagonalPatternBar}>
+                <span style={styles.patternBarText}>
+                  {(interviewType || 'Technical').toUpperCase()}
+                </span>
+              </div>
+            </div>
+
+            <div style={styles.segmentColumn}>
+              <span style={styles.segmentLabel}>Avg Score</span>
+              <div style={styles.segmentPillOutlined}>
+                <span>{avgScore > 0 ? `${avgScore}%` : 'Unscored'}</span>
+              </div>
             </div>
           </div>
 
-          <div style={styles.heroMetricsBar}>
-            {/* Segmented Metric Group */}
-            <div style={styles.segmentedMetricGroup}>
-              <div style={styles.segmentColumn}>
-                <span style={styles.segmentLabel}>Target Role</span>
-                <div style={styles.segmentPillDark}>
-                  <span>{role || user?.targetRole || 'Full Stack'}</span>
-                </div>
+          {/* Counter Stats Group */}
+          <div style={styles.counterStatsGroup}>
+            <div style={styles.counterItem}>
+              <div style={styles.counterIconCircle}>
+                <Mic size={13} color="#1f2123" />
               </div>
-
-              <div style={styles.segmentColumn}>
-                <span style={styles.segmentLabel}>Difficulty</span>
-                <div style={styles.segmentPillYellow}>
-                  <span>{difficulty}</span>
-                </div>
-              </div>
-
-              <div style={styles.segmentColumnWide}>
-                <span style={styles.segmentLabel}>Selected Topic</span>
-                <div style={styles.diagonalPatternBar}>
-                  <span style={styles.patternBarText}>
-                    {(interviewType || 'Technical').toUpperCase()}
-                  </span>
-                </div>
-              </div>
-
-              <div style={styles.segmentColumn}>
-                <span style={styles.segmentLabel}>Avg Score</span>
-                <div style={styles.segmentPillOutlined}>
-                  <span>{avgScore > 0 ? `${avgScore}%` : 'Unscored'}</span>
-                </div>
-              </div>
+              <div style={styles.counterNumber}>{historyList.length}</div>
+              <div style={styles.counterLabel}>Rounds</div>
             </div>
 
-            {/* Counter Stats Group */}
-            <div style={styles.counterStatsGroup}>
-              <div style={styles.counterItem}>
-                <div style={styles.counterIconCircle}>
-                  <Mic size={13} color="#1f2123" />
-                </div>
-                <div style={styles.counterNumber}>{historyList.length}</div>
-                <div style={styles.counterLabel}>Rounds</div>
+            <div style={styles.counterItem}>
+              <div style={styles.counterIconCircle}>
+                <CheckCircle2 size={13} color="#1f2123" />
               </div>
+              <div style={styles.counterNumber}>{completedCount}</div>
+              <div style={styles.counterLabel}>Completed</div>
+            </div>
 
-              <div style={styles.counterItem}>
-                <div style={styles.counterIconCircle}>
-                  <CheckCircle2 size={13} color="#1f2123" />
-                </div>
-                <div style={styles.counterNumber}>{completedCount}</div>
-                <div style={styles.counterLabel}>Completed</div>
+            <div style={styles.counterItem}>
+              <div style={styles.counterIconCircle}>
+                <Award size={13} color="#1f2123" />
               </div>
-
-              <div style={styles.counterItem}>
-                <div style={styles.counterIconCircle}>
-                  <Award size={13} color="#1f2123" />
-                </div>
-                <div style={styles.counterNumber}>{avgScore > 0 ? `${avgScore}%` : '—'}</div>
-                <div style={styles.counterLabel}>Performance</div>
-              </div>
+              <div style={styles.counterNumber}>{avgScore > 0 ? `${avgScore}%` : '—'}</div>
+              <div style={styles.counterLabel}>Performance</div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
       {/* ── 1. CONFIGURATION VIEW ── */}
       {viewState === 'config' && (
@@ -321,7 +466,7 @@ export default function InterviewPrep() {
           {/* Left: Configuration Form */}
           <div style={styles.card}>
             <h2 style={styles.cardTitle}>
-              <Zap size={18} color="#6366f1" /> Configure Interview Session
+              <Zap size={18} color="#f5c842" /> Configure AI Interview Session
             </h2>
 
             {/* Target Role */}
@@ -340,7 +485,7 @@ export default function InterviewPrep() {
 
             {/* Interview Domain / Topic */}
             <div style={styles.formGroup}>
-              <label style={styles.label}>Interview Domain</label>
+              <label style={styles.label}>Interview Domain & Technology Stack</label>
               <div style={styles.topicGrid}>
                 {TOPICS.map((t) => (
                   <div
@@ -352,8 +497,8 @@ export default function InterviewPrep() {
                     }}
                   >
                     <div style={styles.topicCardHeader}>
-                      <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t.label}</span>
-                      {interviewType === t.id && <Check size={16} color="#6366f1" />}
+                      <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{t.label}</span>
+                      {interviewType === t.id && <Check size={16} color="#1f2123" />}
                     </div>
                     <span style={styles.topicDesc}>{t.desc}</span>
                   </div>
@@ -391,7 +536,7 @@ export default function InterviewPrep() {
                 >
                   <option value={3}>3 Questions (Quick Sprint)</option>
                   <option value={5}>5 Questions (Standard Round)</option>
-                  <option value={10}>10 Questions (Comprehensive)</option>
+                  <option value={10}>10 Questions (Comprehensive Mock)</option>
                 </select>
               </div>
             </div>
@@ -407,11 +552,11 @@ export default function InterviewPrep() {
                     ...(mode === 'question-by-question' ? styles.formatCardActive : {})
                   }}
                 >
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '4px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '4px', color: '#1f2123' }}>
                     📝 Question by Question
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                    Step-by-step scoring with instant detailed ideal answer breakdowns.
+                  <div style={{ fontSize: '0.78rem', color: '#5b5e64', lineHeight: 1.4 }}>
+                    Step-by-step answering with voice dictation and instant STAR scorecards.
                   </div>
                 </div>
 
@@ -422,11 +567,11 @@ export default function InterviewPrep() {
                     ...(mode === 'mock-conversation' ? styles.formatCardActive : {})
                   }}
                 >
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '4px' }}>
-                    🎙️ Live Mock Interview
+                  <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '4px', color: '#1f2123' }}>
+                    🎙️ Live Interactive Mock
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                    Conversational flow with AI hiring lead asking dynamic follow-ups.
+                  <div style={{ fontSize: '0.78rem', color: '#5b5e64', lineHeight: 1.4 }}>
+                    Real-time conversational flow with AI hiring lead asking dynamic follow-ups.
                   </div>
                 </div>
               </div>
@@ -451,22 +596,22 @@ export default function InterviewPrep() {
           {/* Right: Interview Preparation Guide */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={styles.card}>
-              <h3 style={styles.cardSubTitle}>💡 Interview Success Tips</h3>
+              <h3 style={styles.cardSubTitle}>💡 Interview Success Strategies</h3>
               <ul style={styles.tipList}>
-                <li><strong>Structure responses:</strong> Use the STAR method (Situation, Task, Action, Result) for behavioral questions.</li>
-                <li><strong>Explain trade-offs:</strong> High-scoring technical answers discuss time vs space complexity and alternative designs.</li>
-                <li><strong>State assumptions clearly:</strong> Before jumping into code or architecture, outline your constraints.</li>
-                <li><strong>Review ideal answers:</strong> After each question, compare your submission with gold-standard industry solutions.</li>
+                <li><strong>Use Voice Dictation:</strong> Click 🎙️ Speak Answer to practice pacing and spoken articulation.</li>
+                <li><strong>Structure with STAR:</strong> Situation, Task, Action, Result guarantees high behavioral scoring.</li>
+                <li><strong>Discuss Trade-offs:</strong> High-scoring technical answers discuss time vs space complexity.</li>
+                <li><strong>Review Ideal Answers:</strong> Compare your submission with gold-standard industry solutions.</li>
               </ul>
             </div>
 
-            <div style={{ ...styles.card, background: 'rgba(99, 102, 241, 0.05)', borderColor: 'rgba(99, 102, 241, 0.2)' }}>
+            <div style={{ ...styles.card, background: '#f6f5f1', border: '1px solid rgba(0, 0, 0, 0.08)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
-                <Sparkles size={18} color="#6366f1" />
-                <span style={{ fontWeight: 700, color: '#f8fafc' }}>AI Evaluation Criteria</span>
+                <Sparkles size={18} color="#1f2123" />
+                <span style={{ fontWeight: 800, color: '#1f2123', fontSize: '0.92rem' }}>AI Evaluation Criteria</span>
               </div>
-              <p style={{ fontSize: '0.82rem', color: '#94a3b8', lineHeight: 1.5 }}>
-                Your responses are evaluated on technical depth, completeness, handling of edge cases, communication clarity, and architectural soundness.
+              <p style={{ fontSize: '0.82rem', color: '#5b5e64', lineHeight: 1.5, margin: 0 }}>
+                Your responses are analyzed for technical depth, structural completeness, handling of edge cases, architectural trade-offs, and communication clarity.
               </p>
             </div>
           </div>
@@ -476,14 +621,25 @@ export default function InterviewPrep() {
       {/* ── 2. ACTIVE QUESTION-BY-QUESTION MODE ── */}
       {viewState === 'active-qa' && session && (
         <div style={styles.activeContainer}>
-          {/* Progress Header */}
+          {/* Progress & Live Stopwatch Header */}
           <div style={styles.sessionHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <span style={styles.difficultyBadge}>{session.difficulty}</span>
-              <span style={{ fontWeight: 600, color: '#f8fafc' }}>{session.role} — {session.interviewType}</span>
+              <span style={{ fontWeight: 700, color: '#1f2123', fontSize: '0.95rem' }}>
+                {session.role} — {session.interviewType}
+              </span>
             </div>
-            <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-              Question <strong>{Math.min(session.currentQuestionIndex + 1, session.totalQuestions)}</strong> of <strong>{session.totalQuestions}</strong>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              {!latestEvaluation && (
+                <div style={styles.liveTimerPill}>
+                  <Clock size={13} color="#1f2123" />
+                  <span>Pace: {formatTimer(answerSeconds)}</span>
+                </div>
+              )}
+              <div style={{ fontSize: '0.85rem', color: '#5b5e64', fontWeight: 600 }}>
+                Question <strong>{Math.min(session.currentQuestionIndex + 1, session.totalQuestions)}</strong> of <strong>{session.totalQuestions}</strong>
+              </div>
             </div>
           </div>
 
@@ -507,6 +663,17 @@ export default function InterviewPrep() {
                 <span style={styles.categoryPill}>
                   {session.questions[session.currentQuestionIndex].category}
                 </span>
+
+                {/* Text-to-Speech Button */}
+                <button
+                  type="button"
+                  onClick={() => handleSpeakQuestion(session.questions[session.currentQuestionIndex].question)}
+                  style={styles.listenAudioBtn}
+                  title="Read question out loud"
+                >
+                  {isSpeaking ? <VolumeX size={14} color="#dc2626" /> : <Volume2 size={14} color="#1f2123" />}
+                  <span>{isSpeaking ? 'Mute' : 'Listen'}</span>
+                </button>
               </div>
 
               <h2 style={styles.questionText}>
@@ -516,24 +683,52 @@ export default function InterviewPrep() {
               {/* Answer Input */}
               {!latestEvaluation ? (
                 <form onSubmit={handleSubmitAnswer} style={{ marginTop: '1.25rem' }}>
-                  <label style={styles.label}>Your Technical Response / Code Explanation</label>
+                  {/* Formatting & Voice Toolbar */}
+                  <div style={styles.answerToolbar}>
+                    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#5b5e64', alignSelf: 'center', marginRight: '4px' }}>
+                        STAR Helpers:
+                      </span>
+                      <button type="button" onClick={() => handleInsertSTAR('S')} style={styles.starHelperChip}>+ Situation</button>
+                      <button type="button" onClick={() => handleInsertSTAR('T')} style={styles.starHelperChip}>+ Task</button>
+                      <button type="button" onClick={() => handleInsertSTAR('A')} style={styles.starHelperChip}>+ Action</button>
+                      <button type="button" onClick={() => handleInsertSTAR('R')} style={styles.starHelperChip}>+ Result</button>
+                      <button type="button" onClick={handleInsertCodeBlock} style={styles.codeSnippetChip}>
+                        <Code size={12} /> Code Block
+                      </button>
+                    </div>
+
+                    {/* Microphone Dictation Button */}
+                    <button
+                      type="button"
+                      onClick={toggleVoiceRecording}
+                      style={{
+                        ...styles.micDictationBtn,
+                        ...(isRecording ? styles.micDictationBtnActive : {})
+                      }}
+                    >
+                      {isRecording ? <MicOff size={14} /> : <Mic size={14} />}
+                      <span>{isRecording ? 'Listening (Click to Stop)' : 'Dictate Answer'}</span>
+                    </button>
+                  </div>
+
                   <textarea
                     style={styles.answerTextarea}
                     rows={8}
-                    placeholder="Provide your comprehensive explanation, code snippets, or architectural trade-offs..."
+                    placeholder="Provide your comprehensive explanation, code snippets, or architectural trade-offs (type or click 'Dictate Answer' above)..."
                     value={currentAnswerText}
                     onChange={(e) => setCurrentAnswerText(e.target.value)}
                     disabled={submittingAnswer}
                   />
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                      Tip: Use clear paragraphs or markdown bullets for structure.
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#71757c' }}>
+                      💡 Aim for 150-300 words with concrete engineering examples.
                     </span>
                     <button
                       type="submit"
                       disabled={submittingAnswer || !currentAnswerText.trim()}
-                      style={styles.primaryLaunchBtn}
+                      style={styles.primaryLaunchBtnInline}
                     >
                       {submittingAnswer ? (
                         <>Evaluating Answer...</>
@@ -554,31 +749,33 @@ export default function InterviewPrep() {
                         style={{
                           ...styles.scoreBadge,
                           background: latestEvaluation.score >= 80 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 179, 8, 0.15)',
-                          color: latestEvaluation.score >= 80 ? '#4ade80' : '#facc15',
-                          borderColor: latestEvaluation.score >= 80 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(234, 179, 8, 0.3)'
+                          color: latestEvaluation.score >= 80 ? '#15803d' : '#b45309',
+                          borderColor: latestEvaluation.score >= 80 ? 'rgba(34, 197, 94, 0.4)' : 'rgba(234, 179, 8, 0.4)'
                         }}
                       >
                         {latestEvaluation.score} / 100
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#f8fafc' }}>
+                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1f2123' }}>
                           {latestEvaluation.score >= 80 ? 'Exceptional Response' : 'Solid Foundation'}
                         </div>
-                        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>AI Evaluation Score</div>
+                        <div style={{ fontSize: '0.82rem', color: '#5b5e64' }}>AI Evaluation Score</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Feedback Text */}
                   <div style={styles.evalSection}>
-                    <div style={styles.evalLabel}>AI Feedback</div>
-                    <p style={{ fontSize: '0.9rem', color: '#cbd5e1', lineHeight: 1.6 }}>{latestEvaluation.feedback}</p>
+                    <div style={styles.evalLabel}>AI Technical Feedback</div>
+                    <p style={{ fontSize: '0.92rem', color: '#1f2123', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
+                      {latestEvaluation.feedback}
+                    </p>
                   </div>
 
                   {/* Strengths & Missed Points */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
                     <div style={styles.evalSubCard}>
-                      <div style={{ ...styles.evalLabel, color: '#4ade80' }}>
+                      <div style={{ ...styles.evalLabel, color: '#16a34a' }}>
                         <CheckCircle2 size={15} /> What You Did Well
                       </div>
                       <ul style={styles.evalList}>
@@ -589,7 +786,7 @@ export default function InterviewPrep() {
                     </div>
 
                     <div style={styles.evalSubCard}>
-                      <div style={{ ...styles.evalLabel, color: '#f87171' }}>
+                      <div style={{ ...styles.evalLabel, color: '#dc2626' }}>
                         <AlertCircle size={15} /> Areas To Strengthen
                       </div>
                       <ul style={styles.evalList}>
@@ -603,7 +800,7 @@ export default function InterviewPrep() {
                   {/* Ideal Reference Answer */}
                   {latestEvaluation.idealAnswer && (
                     <div style={{ ...styles.evalSection, marginTop: '1rem' }}>
-                      <div style={{ ...styles.evalLabel, color: '#818cf8' }}>
+                      <div style={{ ...styles.evalLabel, color: '#4338ca' }}>
                         <BookOpen size={15} /> Reference Gold-Standard Solution
                       </div>
                       <div style={styles.idealAnswerBox}>
@@ -615,26 +812,20 @@ export default function InterviewPrep() {
                   {/* Follow-up question trigger */}
                   {latestEvaluation.followUpQuestion && (
                     <div style={styles.followUpCard}>
-                      <span style={{ fontWeight: 600, color: '#e2e8f0', fontSize: '0.85rem' }}>
-                        💡 Probe Follow-Up: {latestEvaluation.followUpQuestion}
+                      <span style={{ fontWeight: 700, color: '#1f2123', fontSize: '0.88rem' }}>
+                        💡 Interviewer Follow-Up Probe: {latestEvaluation.followUpQuestion}
                       </span>
                     </div>
                   )}
 
                   {/* Next Question / Finish Action */}
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
-                    {session.currentQuestionIndex < session.totalQuestions ? (
-                      <button
-                        onClick={handleNextQuestion}
-                        style={styles.primaryLaunchBtn}
-                      >
+                    {session.currentQuestionIndex < session.totalQuestions - 1 ? (
+                      <button onClick={handleNextQuestion} style={styles.primaryLaunchBtnInline}>
                         Next Question <ChevronRight size={17} />
                       </button>
                     ) : (
-                      <button
-                        onClick={() => setViewState('completed')}
-                        style={styles.primaryLaunchBtn}
-                      >
+                      <button onClick={() => setViewState('completed')} style={styles.primaryLaunchBtnInline}>
                         View Full Scorecard <Award size={17} />
                       </button>
                     )}
@@ -652,14 +843,11 @@ export default function InterviewPrep() {
           <div style={styles.sessionHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <span style={styles.livePulseDot} />
-              <span style={{ fontWeight: 700, color: '#f8fafc' }}>
+              <span style={{ fontWeight: 700, color: '#1f2123', fontSize: '0.95rem' }}>
                 Live Mock Interviewer — {session.role} ({session.interviewType})
               </span>
             </div>
-            <button
-              onClick={() => setViewState('completed')}
-              style={styles.outlineBtn}
-            >
+            <button onClick={() => setViewState('completed')} style={styles.outlineBtn}>
               End & Generate Scorecard
             </button>
           </div>
@@ -680,8 +868,20 @@ export default function InterviewPrep() {
                     ...(msg.speaker === 'user' ? styles.chatBubbleUser : styles.chatBubbleAi)
                   }}
                 >
-                  <div style={styles.chatSpeakerName}>
-                    {msg.speaker === 'user' ? 'You' : 'AI Technical Hiring Lead'}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <div style={styles.chatSpeakerName}>
+                      {msg.speaker === 'user' ? 'You' : 'AI Technical Hiring Lead'}
+                    </div>
+                    {msg.speaker !== 'user' && (
+                      <button
+                        type="button"
+                        onClick={() => handleSpeakQuestion(msg.message)}
+                        style={styles.bubbleSpeakBtn}
+                        title="Read message"
+                      >
+                        <Volume2 size={12} />
+                      </button>
+                    )}
                   </div>
                   <div style={{ fontSize: '0.92rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
                     {msg.message}
@@ -691,23 +891,34 @@ export default function InterviewPrep() {
             ))}
             {submittingAnswer && (
               <div style={{ ...styles.chatBubbleRow, justifyContent: 'flex-start' }}>
-                <div style={{ ...styles.chatBubble, ...styles.chatBubbleAi, fontStyle: 'italic', color: '#94a3b8' }}>
+                <div style={{ ...styles.chatBubble, ...styles.chatBubbleAi, fontStyle: 'italic', color: '#5b5e64' }}>
                   AI Hiring Lead is formulating response...
                 </div>
               </div>
             )}
           </div>
 
-          {/* Input Box */}
+          {/* Input Box with Voice Button */}
           <form onSubmit={handleSendMockMessage} style={styles.mockInputRow}>
             <input
               type="text"
-              placeholder="Type your response to the interviewer..."
+              placeholder="Type your response or use voice dictation..."
               value={mockInput}
               onChange={(e) => setMockInput(e.target.value)}
               disabled={submittingAnswer}
               style={styles.mockInputField}
             />
+            <button
+              type="button"
+              onClick={toggleVoiceRecording}
+              style={{
+                ...styles.mockMicBtn,
+                ...(isRecording ? styles.mockMicBtnActive : {})
+              }}
+              title="Dictate with voice"
+            >
+              <Mic size={16} />
+            </button>
             <button
               type="submit"
               disabled={submittingAnswer || !mockInput.trim()}
@@ -723,13 +934,13 @@ export default function InterviewPrep() {
       {viewState === 'completed' && session && (
         <div style={styles.scorecardContainer}>
           <div style={styles.scorecardHero}>
-            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.15)', border: '2px solid #6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
-              <Award size={40} color="#6366f1" />
+            <div style={styles.scorecardHeroIcon}>
+              <Award size={36} color="#f5c842" />
             </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginBottom: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#1f2123', marginBottom: '0.4rem', fontFamily: "'Libre Caslon Text', Georgia, serif" }}>
               Interview Performance Scorecard
             </h2>
-            <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
+            <p style={{ color: '#5b5e64', fontSize: '0.92rem', margin: 0 }}>
               {session.role} • {session.interviewType} • {session.difficulty}
             </p>
 
@@ -754,82 +965,76 @@ export default function InterviewPrep() {
               <div style={styles.metricValue}>{session.metrics?.problemSolving || 80}%</div>
             </div>
             <div style={styles.metricCard}>
-              <div style={styles.metricLabel}>Confidence</div>
-              <div style={styles.metricValue}>{session.metrics?.confidence || 82}%</div>
+              <div style={styles.metricLabel}>STAR Structure</div>
+              <div style={styles.metricValue}>{session.metrics?.structureScore || 84}%</div>
             </div>
           </div>
 
-          {/* Summary & Action Plan */}
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Executive Summary</h3>
-            <p style={{ color: '#cbd5e1', lineHeight: 1.6, fontSize: '0.92rem' }}>
-              {session.summary || 'Strong performance demonstrating good technical intuition and structured communication.'}
-            </p>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
-              <div>
-                <h4 style={{ color: '#4ade80', fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <CheckCircle2 size={16} /> Key Strengths
-                </h4>
-                <ul style={styles.evalList}>
-                  {session.strengths?.length > 0 ? (
-                    session.strengths.map((s, i) => <li key={i}>{s}</li>)
-                  ) : (
-                    <>
-                      <li>Clear explanation of foundational mechanics</li>
-                      <li>Good pace and organized communication</li>
-                    </>
-                  )}
-                </ul>
-              </div>
-
-              <div>
-                <h4 style={{ color: '#f87171', fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <AlertCircle size={16} /> Priority Improvement Areas
-                </h4>
-                <ul style={styles.evalList}>
-                  {session.areasToImprove?.length > 0 ? (
-                    session.areasToImprove.map((a, i) => <li key={i}>{a}</li>)
-                  ) : (
-                    <>
-                      <li>Elaborate further on concurrency edge cases</li>
-                      <li>Provide quantitative metrics in architectural examples</li>
-                    </>
-                  )}
-                </ul>
+          {/* Questions Review List */}
+          {session.answers && session.answers.length > 0 && (
+            <div style={styles.card}>
+              <h3 style={styles.cardTitle}>
+                <CheckSquare size={18} color="#1f2123" /> Question-by-Question Breakdown
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {session.answers.map((ans, idx) => (
+                  <div key={idx} style={styles.scorecardAnswerCard}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#1f2123' }}>
+                        Q{idx + 1}: {ans.question}
+                      </span>
+                      <span
+                        style={{
+                          ...styles.historyScorePill,
+                          background: ans.score >= 80 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 179, 8, 0.15)',
+                          color: ans.score >= 80 ? '#15803d' : '#b45309'
+                        }}
+                      >
+                        {ans.score}%
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.85rem', color: '#5b5e64', margin: '0 0 0.5rem 0' }}>
+                      <strong>Your Answer:</strong> {ans.userAnswer}
+                    </p>
+                    <p style={{ fontSize: '0.82rem', color: '#1f2123', margin: 0, fontWeight: 500 }}>
+                      <strong>Feedback:</strong> {ans.feedback}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
+          )}
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
-              <button
-                onClick={() => {
-                  setViewState('config');
-                  setSession(null);
-                }}
-                style={styles.primaryLaunchBtn}
-              >
-                <Play size={17} /> Practice Another Session
-              </button>
-            </div>
+          {/* Actions */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1.5rem' }}>
+            <button
+              onClick={() => {
+                setViewState('config');
+                setSession(null);
+              }}
+              style={styles.primaryLaunchBtnInline}
+            >
+              <RotateCcw size={16} /> Start Another Interview
+            </button>
           </div>
         </div>
       )}
 
-      {/* ── 5. PAST SESSIONS HISTORY DRAWER / MODAL ── */}
+      {/* ── 5. HISTORY DRAWER ── */}
       {historyOpen && (
         <div style={styles.modalOverlay} onClick={() => setHistoryOpen(false)}>
           <div style={styles.historyDrawer} onClick={(e) => e.stopPropagation()}>
             <div style={styles.drawerHeader}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
-                Interview Sessions History
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1f2123', margin: 0 }}>
+                Saved Interview Sessions
               </h3>
               <button onClick={() => setHistoryOpen(false)} style={styles.closeBtn}>×</button>
             </div>
 
             <div style={styles.historyListContainer}>
               {historyList.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                  No interview sessions recorded yet. Start your first session!
+                <div style={{ textAlign: 'center', padding: '2rem', color: '#71757c' }}>
+                  No interview sessions recorded yet. Start your first practice round!
                 </div>
               ) : (
                 historyList.map((item) => (
@@ -840,25 +1045,25 @@ export default function InterviewPrep() {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.92rem' }}>
-                          {item.role}
+                        <div style={{ fontWeight: 800, color: '#1f2123', fontSize: '0.92rem' }}>
+                          {item.role} ({item.interviewType})
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px' }}>
-                          {item.interviewType} • {item.difficulty}
+                        <div style={{ fontSize: '0.78rem', color: '#5b5e64', marginTop: '2px' }}>
+                          {item.difficulty} • {item.totalQuestions} Questions
                         </div>
                       </div>
                       <div
                         style={{
                           ...styles.historyScorePill,
-                          background: item.overallScore >= 80 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-                          color: item.overallScore >= 80 ? '#4ade80' : '#a5b4fc'
+                          background: (item.overallScore || 0) >= 80 ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 200, 66, 0.25)',
+                          color: (item.overallScore || 0) >= 80 ? '#15803d' : '#854d0e'
                         }}
                       >
                         {item.overallScore ? `${item.overallScore}%` : 'In Progress'}
                       </div>
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '8px' }}>
-                      {new Date(item.createdAt).toLocaleDateString()} at {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <div style={{ fontSize: '0.72rem', color: '#71757c', marginTop: '8px' }}>
+                      {new Date(item.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                 ))
@@ -873,56 +1078,58 @@ export default function InterviewPrep() {
 
 const styles = {
   interviewContainer: {
+    maxWidth: '1280px',
+    margin: '0 auto',
     width: '100%',
-    fontFamily: "'Playpen Sans', cursive, sans-serif",
+    boxSizing: 'border-box',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
   },
   heroSection: {
-    marginTop: '1.25rem',
-    marginBottom: '2rem',
+    marginBottom: '1.75rem',
   },
   greetingTitle: {
-    fontSize: '2.5rem',
+    fontSize: '2rem',
     fontWeight: 800,
     color: '#1f2123',
-    margin: '0 0 1.25rem 0',
-    letterSpacing: '-0.03em',
-    fontFamily: "'Libre Caslon Text', 'Crimson Pro', Georgia, serif",
+    margin: 0,
+    fontFamily: "'Space Grotesk', sans-serif",
+    letterSpacing: '-0.02em',
   },
   heroMetricsBar: {
     display: 'flex',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: '1.5rem',
+    background: '#ffffff',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
+    borderRadius: '24px',
+    padding: '0.85rem 1.25rem',
+    marginTop: '1.25rem',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
     flexWrap: 'wrap',
+    gap: '1rem',
   },
   segmentedMetricGroup: {
     display: 'flex',
     alignItems: 'center',
-    background: '#ffffff',
-    borderRadius: '40px',
-    padding: '6px 14px',
-    gap: '0.85rem',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.03)',
-    border: '1px solid rgba(0, 0, 0, 0.04)',
+    gap: '1rem',
     flexWrap: 'wrap',
   },
   segmentColumn: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px',
+    gap: '3px',
   },
   segmentColumnWide: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px',
-    minWidth: '140px',
+    gap: '3px',
   },
   segmentLabel: {
-    fontSize: '0.68rem',
-    fontWeight: 800,
+    fontSize: '0.7rem',
     color: '#71757c',
+    fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '0.04em',
-    paddingLeft: '6px',
   },
   segmentPillDark: {
     background: '#1f2123',
@@ -941,19 +1148,16 @@ const styles = {
     fontWeight: 800,
   },
   diagonalPatternBar: {
-    background: 'repeating-linear-gradient(45deg, #1f2123, #1f2123 8px, #2c2f33 8px, #2c2f33 16px)',
-    color: '#ffffff',
-    padding: '5px 14px',
+    background: '#1f2123',
+    padding: '5px 16px',
     borderRadius: '20px',
     fontSize: '0.78rem',
-    fontWeight: 700,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    fontWeight: 800,
   },
   patternBarText: {
     color: '#ffffff',
-    fontWeight: 700,
+    fontWeight: 800,
+    letterSpacing: '0.04em',
   },
   segmentPillOutlined: {
     background: '#f6f5f1',
@@ -962,7 +1166,7 @@ const styles = {
     padding: '5px 14px',
     borderRadius: '20px',
     fontSize: '0.78rem',
-    fontWeight: 700,
+    fontWeight: 800,
   },
   counterStatsGroup: {
     display: 'flex',
@@ -975,10 +1179,10 @@ const styles = {
     gap: '0.45rem',
   },
   counterIconCircle: {
-    width: '24px',
-    height: '24px',
+    width: '26px',
+    height: '26px',
     borderRadius: '50%',
-    background: '#ffffff',
+    background: '#f6f5f1',
     border: '1px solid rgba(0, 0, 0, 0.06)',
     display: 'flex',
     alignItems: 'center',
@@ -1002,13 +1206,13 @@ const styles = {
   },
   card: {
     background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.04)',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
     borderRadius: '24px',
     padding: '1.75rem',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
   },
   cardTitle: {
-    fontSize: '1.1rem',
+    fontSize: '1.15rem',
     fontWeight: 800,
     color: '#1f2123',
     display: 'flex',
@@ -1018,7 +1222,7 @@ const styles = {
   },
   cardSubTitle: {
     fontSize: '1rem',
-    fontWeight: 700,
+    fontWeight: 800,
     color: '#1f2123',
     margin: '0 0 0.75rem 0',
   },
@@ -1028,10 +1232,11 @@ const styles = {
   label: {
     display: 'block',
     fontSize: '0.78rem',
-    fontWeight: 700,
+    fontWeight: 800,
     color: '#5b5e64',
     marginBottom: '0.45rem',
     letterSpacing: '0.02em',
+    textTransform: 'uppercase',
   },
   selectInput: {
     width: '100%',
@@ -1041,6 +1246,7 @@ const styles = {
     borderRadius: '12px',
     color: '#1f2123',
     fontSize: '0.88rem',
+    fontWeight: 600,
     outline: 'none',
     boxSizing: 'border-box',
     fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -1052,7 +1258,7 @@ const styles = {
   },
   topicCard: {
     padding: '0.85rem',
-    background: '#fbfbfa',
+    background: '#fafaf9',
     border: '1px solid rgba(0, 0, 0, 0.06)',
     borderRadius: '16px',
     cursor: 'pointer',
@@ -1068,7 +1274,6 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     color: '#1f2123',
-    fontWeight: 700,
     marginBottom: '3px',
   },
   topicDesc: {
@@ -1093,25 +1298,26 @@ const styles = {
     borderRadius: '30px',
     color: '#5b5e64',
     fontSize: '0.8rem',
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
     transition: 'all 0.15s ease',
   },
   segmentBtnActive: {
     background: '#1f2123',
     color: '#ffffff',
-    fontWeight: 700,
   },
   formatCard: {
     padding: '0.85rem',
-    background: '#fbfbfa',
+    background: '#fafaf9',
     border: '1px solid rgba(0, 0, 0, 0.06)',
     borderRadius: '16px',
     cursor: 'pointer',
+    transition: 'all 0.15s ease',
   },
   formatCardActive: {
     borderColor: '#1f2123',
     background: '#f6f5f1',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
   },
   primaryLaunchBtn: {
     width: '100%',
@@ -1130,9 +1336,23 @@ const styles = {
     transition: 'background 0.15s ease',
     marginTop: '0.5rem',
   },
+  primaryLaunchBtnInline: {
+    padding: '0.75rem 1.5rem',
+    background: '#1f2123',
+    border: 'none',
+    borderRadius: '14px',
+    color: '#ffffff',
+    fontWeight: 800,
+    fontSize: '0.88rem',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem',
+    cursor: 'pointer',
+  },
   secondaryBtn: {
     padding: '0.65rem 1.25rem',
-    background: '#f6f5f1',
+    background: '#ffffff',
     border: '1px solid rgba(0, 0, 0, 0.08)',
     borderRadius: '30px',
     color: '#1f2123',
@@ -1142,6 +1362,7 @@ const styles = {
     alignItems: 'center',
     gap: '0.5rem',
     cursor: 'pointer',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
   },
   outlineBtn: {
     padding: '0.65rem 1.25rem',
@@ -1149,7 +1370,7 @@ const styles = {
     border: '1px solid #d1d5db',
     borderRadius: '30px',
     color: '#5b5e64',
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: '0.85rem',
     display: 'flex',
     alignItems: 'center',
@@ -1159,7 +1380,7 @@ const styles = {
   tipList: {
     margin: 0,
     paddingLeft: '1.2rem',
-    color: '#71757c',
+    color: '#5b5e64',
     fontSize: '0.85rem',
     lineHeight: 1.6,
     display: 'flex',
@@ -1175,14 +1396,28 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '0.75rem',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
   },
   difficultyBadge: {
-    padding: '3px 8px',
-    background: 'rgba(245, 200, 66, 0.25)',
+    padding: '4px 10px',
+    background: 'rgba(245, 200, 66, 0.3)',
     color: '#1f2123',
     borderRadius: '12px',
     fontSize: '0.72rem',
     fontWeight: 800,
+  },
+  liveTimerPill: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    padding: '4px 10px',
+    background: '#ffffff',
+    border: '1px solid rgba(0, 0, 0, 0.08)',
+    borderRadius: '14px',
+    fontSize: '0.78rem',
+    fontWeight: 700,
+    color: '#1f2123',
   },
   progressBarBg: {
     width: '100%',
@@ -1200,31 +1435,97 @@ const styles = {
   },
   questionMeta: {
     display: 'flex',
+    alignItems: 'center',
     gap: '0.5rem',
     marginBottom: '0.75rem',
+    flexWrap: 'wrap',
   },
   questionNumPill: {
-    padding: '3px 10px',
+    padding: '4px 12px',
     background: '#1f2123',
     color: '#f5c842',
     borderRadius: '14px',
-    fontSize: '0.72rem',
+    fontSize: '0.75rem',
     fontWeight: 800,
   },
   categoryPill: {
-    padding: '3px 10px',
+    padding: '4px 12px',
     background: '#f0f2f5',
     color: '#5b5e64',
     borderRadius: '14px',
-    fontSize: '0.72rem',
+    fontSize: '0.75rem',
     fontWeight: 700,
   },
+  listenAudioBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    padding: '4px 10px',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0,0,0,0.06)',
+    borderRadius: '14px',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+    color: '#1f2123',
+    cursor: 'pointer',
+    marginLeft: 'auto',
+  },
   questionText: {
-    fontSize: '1.25rem',
+    fontSize: '1.3rem',
     fontWeight: 800,
     color: '#1f2123',
     lineHeight: 1.5,
-    margin: '0 0 1rem 0',
+    margin: '0 0 1.25rem 0',
+  },
+  answerToolbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '0.65rem',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+  },
+  starHelperChip: {
+    padding: '3px 8px',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0, 0, 0, 0.08)',
+    borderRadius: '10px',
+    fontSize: '0.72rem',
+    fontWeight: 700,
+    color: '#1f2123',
+    cursor: 'pointer',
+  },
+  codeSnippetChip: {
+    padding: '3px 8px',
+    background: '#1f2123',
+    border: 'none',
+    borderRadius: '10px',
+    fontSize: '0.72rem',
+    fontWeight: 700,
+    color: '#f5c842',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '3px',
+  },
+  micDictationBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.4rem',
+    padding: '5px 12px',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0, 0, 0, 0.1)',
+    borderRadius: '12px',
+    fontSize: '0.78rem',
+    fontWeight: 700,
+    color: '#1f2123',
+    cursor: 'pointer',
+  },
+  micDictationBtnActive: {
+    background: '#ef4444',
+    color: '#ffffff',
+    borderColor: '#dc2626',
+    animation: 'pulse 1.5s infinite',
   },
   answerTextarea: {
     width: '100%',
@@ -1235,7 +1536,7 @@ const styles = {
     color: '#1f2123',
     fontFamily: "'JetBrains Mono', monospace, sans-serif",
     fontSize: '0.88rem',
-    lineHeight: 1.5,
+    lineHeight: 1.6,
     resize: 'vertical',
     outline: 'none',
     boxSizing: 'border-box',
@@ -1257,6 +1558,7 @@ const styles = {
     border: '2px solid',
     fontWeight: 900,
     fontSize: '1.2rem',
+    fontFamily: "'Space Grotesk', sans-serif",
   },
   evalSection: {
     marginBottom: '1rem',
@@ -1287,6 +1589,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.35rem',
+    fontWeight: 500,
   },
   idealAnswerBox: {
     padding: '1rem',
@@ -1296,11 +1599,12 @@ const styles = {
     color: '#1f2123',
     fontSize: '0.88rem',
     lineHeight: 1.6,
+    fontWeight: 500,
   },
   followUpCard: {
     padding: '0.85rem 1.25rem',
-    background: 'rgba(245, 200, 66, 0.2)',
-    border: '1px solid rgba(245, 200, 66, 0.4)',
+    background: 'rgba(245, 200, 66, 0.25)',
+    border: '1px solid rgba(245, 200, 66, 0.5)',
     borderRadius: '14px',
     marginTop: '0.75rem',
   },
@@ -1339,11 +1643,19 @@ const styles = {
   },
   chatSpeakerName: {
     fontSize: '0.72rem',
-    fontWeight: 700,
+    fontWeight: 800,
     textTransform: 'uppercase',
     letterSpacing: '0.04em',
-    marginBottom: '4px',
-    opacity: 0.8,
+    color: '#71757c',
+  },
+  bubbleSpeakBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#71757c',
+    padding: '2px',
+    display: 'flex',
+    alignItems: 'center',
   },
   livePulseDot: {
     width: '10px',
@@ -1355,7 +1667,7 @@ const styles = {
   },
   mockInputRow: {
     display: 'flex',
-    gap: '0.75rem',
+    gap: '0.5rem',
   },
   mockInputField: {
     flex: 1,
@@ -1367,6 +1679,22 @@ const styles = {
     fontSize: '0.9rem',
     outline: 'none',
     boxSizing: 'border-box',
+    fontWeight: 500,
+  },
+  mockMicBtn: {
+    padding: '0 1rem',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0,0,0,0.08)',
+    borderRadius: '12px',
+    color: '#1f2123',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mockMicBtnActive: {
+    background: '#ef4444',
+    color: '#ffffff',
   },
   mockSendBtn: {
     padding: '0 1.5rem',
@@ -1385,18 +1713,29 @@ const styles = {
   },
   scorecardHero: {
     textAlign: 'center',
-    padding: '2rem',
+    padding: '2.25rem 2rem',
     background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.04)',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
     borderRadius: '24px',
     marginBottom: '1.5rem',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
+  },
+  scorecardHeroIcon: {
+    width: '76px',
+    height: '76px',
+    borderRadius: '50%',
+    background: '#1f2123',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto 1.25rem',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
   },
   bigScoreBox: {
     display: 'inline-flex',
     alignItems: 'baseline',
     gap: '0.4rem',
-    marginTop: '1rem',
+    marginTop: '1.25rem',
     padding: '0.65rem 1.75rem',
     background: '#1f2123',
     borderRadius: '18px',
@@ -1410,7 +1749,7 @@ const styles = {
   },
   bigScoreTotal: {
     fontSize: '1.2rem',
-    color: '#cbd5e1',
+    color: '#94a3b8',
     fontWeight: 600,
   },
   metricsGrid: {
@@ -1421,7 +1760,7 @@ const styles = {
   },
   metricCard: {
     background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.04)',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
     borderRadius: '18px',
     padding: '1.25rem 1rem',
     textAlign: 'center',
@@ -1430,8 +1769,9 @@ const styles = {
   metricLabel: {
     fontSize: '0.75rem',
     color: '#71757c',
-    fontWeight: 600,
+    fontWeight: 700,
     marginBottom: '4px',
+    textTransform: 'uppercase',
   },
   metricValue: {
     fontSize: '1.4rem',
@@ -1439,10 +1779,16 @@ const styles = {
     color: '#1f2123',
     fontFamily: "'Space Grotesk', sans-serif",
   },
+  scorecardAnswerCard: {
+    padding: '1rem',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0,0,0,0.06)',
+    borderRadius: '14px',
+  },
   modalOverlay: {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(0, 0, 0, 0.6)',
+    background: 'rgba(0, 0, 0, 0.5)',
     backdropFilter: 'blur(4px)',
     zIndex: 1000,
     display: 'flex',
