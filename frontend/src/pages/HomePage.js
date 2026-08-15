@@ -361,12 +361,12 @@ export default function HomePage() {
 
         .sai-nav-island {
           pointer-events: auto;
-          background: rgba(255, 255, 255, 0.08) !important;
-          backdrop-filter: blur(28px) saturate(210%) !important;
-          -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+          background: rgba(8, 10, 15, 0.78) !important;
+          backdrop-filter: blur(24px) saturate(180%) !important;
+          -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
           border: none !important;
           border-radius: 40px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
           display: flex;
           align-items: center;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -518,9 +518,9 @@ export default function HomePage() {
 
         .sai-mobile-hamburger {
           pointer-events: auto;
-          background: rgba(255, 255, 255, 0.12);
-          backdrop-filter: blur(24px) saturate(190%);
-          -webkit-backdrop-filter: blur(24px) saturate(190%);
+          background: rgba(8, 10, 15, 0.78);
+          backdrop-filter: blur(24px) saturate(180%);
+          -webkit-backdrop-filter: blur(24px) saturate(180%);
           border: none;
           color: #ffffff;
           width: 44px;
@@ -531,7 +531,7 @@ export default function HomePage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.35);
         }
 
         .sai-navbar-dock.scrolled .sai-mobile-hamburger {
