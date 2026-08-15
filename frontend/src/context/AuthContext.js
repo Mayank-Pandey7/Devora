@@ -18,7 +18,14 @@ API.interceptors.request.use((config) => {
 });
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const cached = localStorage.getItem('devora_user');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
 
   // Clerk hook integration
@@ -48,19 +55,19 @@ export const AuthProvider = ({ children }) => {
       if (token && !user) {
         try {
           const res = await API.get('/auth/me');
-          if (isMounted) {
+          if (isMounted && res.data?.user) {
             localStorage.setItem('devora_user', JSON.stringify(res.data.user));
             setUser(res.data.user);
             setLoading(false);
+            return;
           }
-          return;
         } catch (e) {
           localStorage.removeItem('token');
           localStorage.removeItem('devora_user');
         }
       }
 
-      // 2. If Clerk is loaded and signed in (e.g. via Google OAuth)
+      // 2. If Clerk is loaded and signed in
       if (isClerkLoaded && isSignedIn && clerkUser) {
         const email = clerkUser.primaryEmailAddress?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress;
         if (email) {
@@ -85,12 +92,13 @@ export const AuthProvider = ({ children }) => {
             resumeScore: cached?.resumeScore || 0,
           };
 
-          if (isMounted && (!user || user.clerkUserId !== clerkUser.id)) {
-            setUser(optimisticUser);
+          if (isMounted) {
+            localStorage.setItem('devora_user', JSON.stringify(optimisticUser));
+            setUser((prev) => (prev && prev.clerkUserId === clerkUser.id ? prev : optimisticUser));
             setLoading(false);
           }
 
-          // In parallel, persist and sync with MongoDB Atlas backend
+          // In parallel, persist and sync with MongoDB backend
           try {
             const res = await API.post('/auth/clerk', {
               clerkUserId: clerkUser.id,
@@ -112,9 +120,8 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      // 3. If Clerk is still initializing, wait before marking loading false
-      const hasClerkKey = Boolean(process.env.REACT_APP_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
-      if (hasClerkKey && !isClerkLoaded) {
+      // 3. If Clerk is still initializing, keep loading true
+      if (!isClerkLoaded) {
         return;
       }
 
@@ -128,7 +135,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       isMounted = false;
     };
-  }, [isClerkLoaded, isSignedIn, clerkUser, user]);
+  }, [isClerkLoaded, isSignedIn, clerkUser?.id]);
 
   const login = async (email, password) => {
     const res = await API.post('/auth/login', { email, password });

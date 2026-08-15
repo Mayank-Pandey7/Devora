@@ -60,45 +60,23 @@ function AppRoutes() {
         <Route path="/scheduler"        element={<Navigate to="/dashboard" replace />} />
       </Route>
 
-      {/* Public Landing & Modal Overlay Routes */}
+      {/* Public Landing & Authentication Routes */}
       <Route
         path="/"
         element={
-          user ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <>
-              <HomePage />
-              {isAuthModal && location.pathname === '/login' && <LoginPage />}
-              {isAuthModal && location.pathname === '/register' && <RegisterPage />}
-            </>
-          )
+          user ? <Navigate to="/dashboard" replace /> : <HomePage />
         }
       />
       <Route
         path="/login"
         element={
-          user ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <>
-              <HomePage />
-              <LoginPage />
-            </>
-          )
+          user ? <Navigate to="/dashboard" replace /> : <LoginPage />
         }
       />
       <Route
         path="/register"
         element={
-          user ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <>
-              <HomePage />
-              <RegisterPage />
-            </>
-          )
+          user ? <Navigate to="/dashboard" replace /> : <RegisterPage />
         }
       />
 

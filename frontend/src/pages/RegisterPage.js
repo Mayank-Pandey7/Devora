@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SignUp } from "@clerk/clerk-react";
+import { SignUp, useUser } from "@clerk/clerk-react";
+import { useAuth } from "../context/AuthContext";
+import DevoraLoader from "../components/common/DevoraLoader";
 import "./AuthPages.css";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
+
+  useEffect(() => {
+    if ((isLoaded && isSignedIn) || user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isLoaded, isSignedIn, user, navigate]);
+
+  if ((isLoaded && isSignedIn) || user) {
+    return <DevoraLoader message="Setting up your Devora workspace..." />;
+  }
 
   return (
     <div className="auth-page-root" onClick={() => navigate("/")}>
