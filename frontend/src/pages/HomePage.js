@@ -361,12 +361,12 @@ export default function HomePage() {
 
         .sai-nav-island {
           pointer-events: auto;
-          background: rgba(10, 11, 14, 0.92) !important;
-          backdrop-filter: blur(20px) saturate(190%) !important;
-          -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
-          border: none !important;
+          background: rgba(255, 255, 255, 0.08) !important;
+          backdrop-filter: blur(28px) saturate(210%) !important;
+          -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.18) !important;
           border-radius: 40px;
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45) !important;
+          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
           display: flex;
           align-items: center;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -378,8 +378,11 @@ export default function HomePage() {
         }
 
         .sai-brand-island.brand-docked {
-          background: rgba(255, 255, 255, 0.94) !important;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+          background: rgba(255, 255, 255, 0.72) !important;
+          backdrop-filter: blur(28px) saturate(200%) !important;
+          -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.7) !important;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
         }
 
         .sai-brand-island.brand-docked .nav-docked-title {
@@ -416,13 +419,14 @@ export default function HomePage() {
         }
 
         .sai-links-island a {
-          color: rgba(255, 255, 255, 0.85) !important;
+          color: rgba(255, 255, 255, 0.88) !important;
           text-decoration: none;
           font-size: 0.9rem;
           font-weight: 600;
           letter-spacing: 0.025em;
           transition: all 0.2s ease;
           white-space: nowrap;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         .sai-links-island a:hover {
@@ -437,6 +441,7 @@ export default function HomePage() {
           font-weight: 700;
           padding: 0.4rem 0.6rem;
           transition: color 0.2s ease;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         .sai-login-btn:hover {
@@ -474,15 +479,17 @@ export default function HomePage() {
           transform: translateX(4px);
         }
 
-        /* Scrolled State Across the 3 Islands */
+        /* Scrolled State Across the 3 Islands - High-Transparency Frost Glass */
         .sai-navbar-dock.scrolled {
           top: 12px;
         }
 
         .sai-navbar-dock.scrolled .sai-nav-island {
-          background: rgba(255, 255, 255, 0.94) !important;
-          border: none !important;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06) !important;
+          background: rgba(255, 255, 255, 0.68) !important;
+          backdrop-filter: blur(30px) saturate(200%) !important;
+          -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.65) !important;
+          box-shadow: 0 10px 32px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
         }
 
         .sai-navbar-dock.scrolled .sai-brand-name {
@@ -490,15 +497,17 @@ export default function HomePage() {
         }
 
         .sai-navbar-dock.scrolled .sai-links-island a {
-          color: #5b5e64 !important;
+          color: #374151 !important;
+          text-shadow: none;
         }
 
         .sai-navbar-dock.scrolled .sai-links-island a:hover {
-          color: #1f2123 !important;
+          color: #111827 !important;
         }
 
         .sai-navbar-dock.scrolled .sai-login-btn {
           color: #1f2123 !important;
+          text-shadow: none;
         }
 
         .sai-navbar-dock.scrolled .sai-get-started-btn {
@@ -515,10 +524,10 @@ export default function HomePage() {
 
         .sai-mobile-hamburger {
           pointer-events: auto;
-          background: rgba(10, 11, 14, 0.92);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: none;
+          background: rgba(255, 255, 255, 0.12);
+          backdrop-filter: blur(24px) saturate(190%);
+          -webkit-backdrop-filter: blur(24px) saturate(190%);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           color: #ffffff;
           width: 44px;
           height: 44px;
@@ -528,11 +537,12 @@ export default function HomePage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.25);
         }
 
         .sai-navbar-dock.scrolled .sai-mobile-hamburger {
-          background: rgba(255, 255, 255, 0.94);
+          background: rgba(255, 255, 255, 0.72);
+          border: 1px solid rgba(255, 255, 255, 0.7);
           color: #1f2123;
           box-shadow: 0 6px 20px rgba(0,0,0,0.06);
         }
@@ -541,10 +551,10 @@ export default function HomePage() {
           pointer-events: auto;
           position: absolute;
           top: 65px; left: 0; right: 0;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border: none;
+          background: rgba(255, 255, 255, 0.82);
+          backdrop-filter: blur(32px) saturate(200%);
+          -webkit-backdrop-filter: blur(32px) saturate(200%);
+          border: 1px solid rgba(255, 255, 255, 0.7);
           border-radius: 24px;
           padding: 1.5rem;
           display: flex;
