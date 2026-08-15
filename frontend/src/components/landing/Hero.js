@@ -43,15 +43,14 @@ export default function Hero({ heroLogoRef, isTraveling }) {
           <div className="sap-hero-bottom-grid">
             {/* Left Bottom Section: Developer Tagline & Subtext */}
             <div className="sap-hero-bottom-left">
-              <div className="sap-avatar-stack">
-                <div className="sap-avatars">
-                  <div className="avatar-placeholder p1">AI</div>
-                  <div className="avatar-placeholder p2">⚡</div>
-                  <div className="avatar-placeholder p3" style={{ background: '#f5c842', color: '#1f2123', fontSize: '11px', fontWeight: 900 }}>DEV</div>
-                </div>
+              <div className="sap-avatar-stack" style={{ marginBottom: "0.85rem" }}>
                 <div className="sap-avatar-info">
-                  <span className="sap-stat-number">Build Better</span>
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.75)', fontWeight: 600 }}>Interview smarter • Get hired</span>
+                  <span className="sap-stat-number" style={{ fontSize: "1.35rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.01em" }}>
+                    Build Better
+                  </span>
+                  <span style={{ fontSize: "0.82rem", color: "rgba(255, 255, 255, 0.8)", fontWeight: 600, display: "block", marginTop: "2px" }}>
+                    Interview smarter • Get hired
+                  </span>
                 </div>
               </div>
 

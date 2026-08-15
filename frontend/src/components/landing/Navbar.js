@@ -14,29 +14,26 @@ export default function Navbar({ navLogoRef, isDocked, travelProgress = 0 }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Expanding brand slot width calculation
+  // Smooth brand dock visibility
   const isBrandVisible = isDocked || travelProgress > 0.02;
-  const brandOpacity = isDocked ? 1 : Math.min(1, Math.max(0, (travelProgress - 0.02) * 4));
-  const slotWidth = isDocked ? "auto" : `${travelProgress * 150}px`;
+  const brandOpacity = isDocked ? 1 : Math.min(1, Math.max(0, (travelProgress - 0.02) * 3));
 
   return (
     <header className={`sai-navbar-dock ${scrolled ? "scrolled" : ""}`}>
       <div className="sai-dock-container">
-        {/* 1. LEFT SECTION: Standalone Brand / Logo Island (fades in as DEVORA travels) */}
+        {/* 1. LEFT SECTION: Standalone Brand / Logo Island */}
         <div
           ref={navLogoRef}
           className={`sai-nav-island sai-brand-island ${isDocked ? "brand-docked" : ""}`}
           style={{
-            width: isBrandVisible ? slotWidth : "0px",
-            minWidth: isDocked ? "145px" : (isBrandVisible ? slotWidth : "0px"),
+            minWidth: "148px",
             opacity: brandOpacity,
-            pointerEvents: isBrandVisible ? "auto" : "none",
-            overflow: "hidden",
+            pointerEvents: isDocked ? "auto" : "none",
             display: "inline-flex",
             alignItems: "center",
             whiteSpace: "nowrap",
             flexShrink: 0,
-            transition: "opacity 0.2s ease"
+            transition: "opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)"
           }}
         >
           <Link to="/" className="sai-brand" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.6rem" }}>
@@ -44,9 +41,9 @@ export default function Navbar({ navLogoRef, isDocked, travelProgress = 0 }) {
               src="/logo.png"
               alt="Devora Logo"
               style={{
-                opacity: isDocked ? 1 : 0,
-                transform: isDocked ? "scale(1)" : "scale(0.5)",
-                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                opacity: travelProgress > 0.1 ? Math.min(1, (travelProgress - 0.1) * 2) : 0,
+                transform: `scale(${Math.min(1, 0.4 + 0.6 * travelProgress)})`,
+                transition: "transform 0.2s ease",
                 width: "36px",
                 height: "36px",
                 objectFit: "contain",
@@ -57,16 +54,16 @@ export default function Navbar({ navLogoRef, isDocked, travelProgress = 0 }) {
               className="universal-hero-title nav-docked-title"
               style={{
                 opacity: isDocked ? 1 : 0,
-                fontSize: "1.5rem",
+                fontSize: "1.45rem",
                 letterSpacing: "0.03em",
                 lineHeight: 1,
                 margin: 0,
                 padding: 0,
                 display: "inline-block",
-                transition: "opacity 0.15s ease",
                 fontWeight: 900,
                 color: "#1f2123",
-                WebkitTextFillColor: "#1f2123"
+                WebkitTextFillColor: "#1f2123",
+                transition: "opacity 0.15s ease"
               }}
             >
               DEVORA

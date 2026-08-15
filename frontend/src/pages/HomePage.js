@@ -30,16 +30,12 @@ export default function HomePage() {
     const navRect = navLogoRef.current.getBoundingClientRect();
 
     const scrollY = window.scrollY;
-    const initialHeroY = heroRect.top + scrollY;
-    const navY = navRect.top;
-    const threshold = Math.max(500, (initialHeroY - navY) * 1.65);
+    // Fluid responsive scroll threshold
+    const threshold = Math.max(380, Math.min(520, window.innerHeight * 0.55));
 
-    // Smooth quadratic ease for organic curved movement
     const rawProgress = Math.min(1, Math.max(0, scrollY / threshold));
-    const p =
-      rawProgress < 0.5
-        ? 2 * rawProgress * rawProgress
-        : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2;
+    // Butter-smooth cubic ease out
+    const p = 1 - Math.pow(1 - rawProgress, 2.5);
 
     const currentlyTraveling = rawProgress > 0.005 && rawProgress < 0.98;
     const currentlyDocked = rawProgress >= 0.98;
@@ -59,30 +55,31 @@ export default function HomePage() {
     }
 
     if (travelLogoRef.current) {
-      // Subtle 3D parabolic trajectory arc curve (-24px lift)
-      const arcLift = Math.sin(p * Math.PI) * -24;
+      // Gentle parabolic arc lift
+      const arcLift = Math.sin(p * Math.PI) * -18;
 
       // Start coordinates (Hero title viewport center)
       const startX = heroRect.left + heroRect.width / 2;
       const startY = heroRect.top + heroRect.height / 2;
 
-      // Target coordinates (Navbar logo destination viewport center)
-      const targetX = navRect.left + navRect.width / 2;
+      // Target coordinates (Navbar logo text center)
+      // Logo image is 36px wide + 10px gap + half of text width (~50px) = +96px from navRect.left
+      const targetX = navRect.left + 96;
       const targetY = navRect.top + navRect.height / 2;
 
       // Smooth curved arc coordinates (X, Y)
       const currentX = startX + (targetX - startX) * p;
       const currentY = startY + (targetY - startY) * p + arcLift;
 
-      // Font size scaling: from Hero size down to Navbar logo font size (~32px)
+      // Font size scaling: from Hero size down to Navbar docked font size (23.2px / 1.45rem)
       const heroFontSize = parseFloat(window.getComputedStyle(heroLogoRef.current).fontSize) || 120;
-      const targetFontSize = Math.max(28, Math.min(36, window.innerWidth * 0.025));
+      const targetFontSize = 23.2;
       const currentFontSize = heroFontSize + (targetFontSize - heroFontSize) * p;
 
-      // Smoothly transition color from white #ffffff to dark obsidian #1f2123 as it approaches the top navbar dock
-      const r = Math.round(255 - (255 - 31) * Math.pow(p, 0.7));
-      const g = Math.round(255 - (255 - 33) * Math.pow(p, 0.7));
-      const b = Math.round(255 - (255 - 35) * Math.pow(p, 0.7));
+      // Smoothly blend color from pure white #ffffff to dark obsidian #1f2123
+      const r = Math.round(255 - (255 - 31) * Math.pow(p, 0.6));
+      const g = Math.round(255 - (255 - 33) * Math.pow(p, 0.6));
+      const b = Math.round(255 - (255 - 35) * Math.pow(p, 0.6));
       const colorRgb = `rgb(${r}, ${g}, ${b})`;
 
       // Direct zero-jitter GPU compositor style updates
@@ -90,7 +87,7 @@ export default function HomePage() {
       style.position = "fixed";
       style.left = `${currentX}px`;
       style.top = `${currentY}px`;
-      style.transform = "translate(-50%, -50%)";
+      style.transform = "translate3d(-50%, -50%, 0)";
       style.fontSize = `${currentFontSize}px`;
       style.fontWeight = "900";
       style.fontFamily = "'Space Grotesk', -apple-system, sans-serif";
@@ -104,7 +101,7 @@ export default function HomePage() {
       style.opacity = currentlyTraveling ? "1" : "0";
       style.background = "none";
       style.webkitTextFillColor = colorRgb;
-      style.filter = `drop-shadow(0 ${15 - 10 * p}px ${35 - 20 * p}px rgba(0, 0, 0, ${0.95 - 0.4 * p}))`;
+      style.filter = `drop-shadow(0 ${12 - 10 * p}px ${25 - 20 * p}px rgba(0, 0, 0, ${0.85 - 0.65 * p}))`;
     }
   }, []);
 
@@ -787,11 +784,23 @@ export default function HomePage() {
           margin: 0;
           padding: 0;
           user-select: none;
-          color: #ffffff !important;
+          color: #ffffff;
           background: none !important;
           background-color: transparent !important;
-          -webkit-text-fill-color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff;
           filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.95));
+        }
+
+        .universal-hero-title.devora-traveling-logo {
+          color: unset !important;
+          -webkit-text-fill-color: unset !important;
+          will-change: transform, left, top, font-size, color, filter;
+        }
+
+        .universal-hero-title.nav-docked-title {
+          color: #1f2123 !important;
+          -webkit-text-fill-color: #1f2123 !important;
+          filter: none !important;
         }
 
         .universal-hero-title .char {
