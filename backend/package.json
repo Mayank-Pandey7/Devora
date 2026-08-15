@@ -8,6 +8,7 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.1.6",
     "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -19,7 +20,7 @@
     "multer": "^2.2.0",
     "node-fetch": "^2.7.0",
     "nodemailer": "^8.0.5",
-    "pdf-parse": "^2.4.5"
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

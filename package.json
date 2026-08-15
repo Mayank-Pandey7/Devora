@@ -8,6 +8,7 @@
     "render-build": "cd backend && npm install"
   },
   "dependencies": {
+    "@clerk/express": "^2.1.57",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.0",
