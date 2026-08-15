@@ -27,6 +27,18 @@ export default function LoginPage() {
         className="auth-single-card-wrapper"
         onClick={(e) => e.stopPropagation()}
       >
+        <button
+          className="auth-floating-close-btn"
+          onClick={() => navigate("/")}
+          title="Close and return to home"
+          aria-label="Close"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
         <SignIn
           routing="hash"
           forceRedirectUrl="/dashboard"
@@ -42,7 +54,7 @@ export default function LoginPage() {
             variables: {
               colorPrimary: "#1f2123",
               colorText: "#1f2123",
-              colorBackground: "#ffffff",
+              colorBackground: "transparent",
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               borderRadius: "14px",
             },
@@ -54,8 +66,9 @@ export default function LoginPage() {
               cardBox: {
                 borderRadius: "26px",
                 overflow: "hidden",
-                boxShadow: "0 30px 80px -15px rgba(0, 0, 0, 0.35)",
-                background: "#ffffff",
+                boxShadow: "0 30px 80px -15px rgba(0, 0, 0, 0.38)",
+                background: "rgba(255, 255, 255, 0.88)",
+                backdropFilter: "blur(24px)",
               },
               card: {
                 borderRadius: "0",

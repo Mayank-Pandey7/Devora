@@ -70,13 +70,27 @@ function AppRoutes() {
       <Route
         path="/login"
         element={
-          user ? <Navigate to="/dashboard" replace /> : <LoginPage />
+          user ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <>
+              <HomePage />
+              <LoginPage />
+            </>
+          )
         }
       />
       <Route
         path="/register"
         element={
-          user ? <Navigate to="/dashboard" replace /> : <RegisterPage />
+          user ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <>
+              <HomePage />
+              <RegisterPage />
+            </>
+          )
         }
       />
 
