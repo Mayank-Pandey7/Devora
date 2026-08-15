@@ -505,22 +505,35 @@ export default function InterviewPrep() {
             <div style={styles.formGroup}>
               <label style={styles.label}>Interview Domain & Technology Stack</label>
               <div style={styles.topicGrid}>
-                {TOPICS.map((t) => (
-                  <div
-                    key={t.id}
-                    onClick={() => setInterviewType(t.id)}
-                    style={{
-                      ...styles.topicCard,
-                      ...(interviewType === t.id ? styles.topicCardActive : {})
-                    }}
-                  >
-                    <div style={styles.topicCardHeader}>
-                      <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{t.label}</span>
-                      {interviewType === t.id && <Check size={16} color="#1f2123" />}
+                {TOPICS.map((t) => {
+                  const isSelected = interviewType === t.id;
+                  return (
+                    <div
+                      key={t.id}
+                      onClick={() => setInterviewType(t.id)}
+                      style={{
+                        ...styles.topicCard,
+                        ...(isSelected ? styles.topicCardActive : {})
+                      }}
+                    >
+                      <div style={styles.topicCardHeader}>
+                        <span style={{ fontWeight: 800, fontSize: '0.92rem', color: isSelected ? '#ffffff' : '#1f2123' }}>
+                          {t.label}
+                        </span>
+                        {isSelected ? (
+                          <div style={styles.activeCheckPill}>
+                            <Check size={12} color="#1f2123" strokeWidth={3} />
+                          </div>
+                        ) : (
+                          <div style={styles.inactiveCircle} />
+                        )}
+                      </div>
+                      <span style={{ ...styles.topicDesc, color: isSelected ? '#f5c842' : '#71757c' }}>
+                        {t.desc}
+                      </span>
                     </div>
-                    <span style={styles.topicDesc}>{t.desc}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -570,10 +583,19 @@ export default function InterviewPrep() {
                     ...(mode === 'question-by-question' ? styles.formatCardActive : {})
                   }}
                 >
-                  <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '4px', color: '#1f2123' }}>
-                    📝 Question by Question
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.92rem', color: mode === 'question-by-question' ? '#ffffff' : '#1f2123' }}>
+                      📝 Question by Question
+                    </span>
+                    {mode === 'question-by-question' ? (
+                      <div style={styles.activeCheckPill}>
+                        <Check size={12} color="#1f2123" strokeWidth={3} />
+                      </div>
+                    ) : (
+                      <div style={styles.inactiveCircle} />
+                    )}
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#5b5e64', lineHeight: 1.4 }}>
+                  <div style={{ fontSize: '0.78rem', color: mode === 'question-by-question' ? '#cbd5e1' : '#71757c', lineHeight: 1.4 }}>
                     Step-by-step answering with voice dictation and instant STAR scorecards.
                   </div>
                 </div>
@@ -585,10 +607,19 @@ export default function InterviewPrep() {
                     ...(mode === 'mock-conversation' ? styles.formatCardActive : {})
                   }}
                 >
-                  <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '4px', color: '#1f2123' }}>
-                    🎙️ Live Interactive Mock
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.92rem', color: mode === 'mock-conversation' ? '#ffffff' : '#1f2123' }}>
+                      🎙️ Live Interactive Mock
+                    </span>
+                    {mode === 'mock-conversation' ? (
+                      <div style={styles.activeCheckPill}>
+                        <Check size={12} color="#1f2123" strokeWidth={3} />
+                      </div>
+                    ) : (
+                      <div style={styles.inactiveCircle} />
+                    )}
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#5b5e64', lineHeight: 1.4 }}>
+                  <div style={{ fontSize: '0.78rem', color: mode === 'mock-conversation' ? '#cbd5e1' : '#71757c', lineHeight: 1.4 }}>
                     Real-time conversational flow with AI hiring lead asking dynamic follow-ups.
                   </div>
                 </div>
@@ -1291,30 +1322,49 @@ const styles = {
     gap: '0.65rem',
   },
   topicCard: {
-    padding: '0.85rem',
-    background: '#fafaf9',
-    border: '1px solid rgba(0, 0, 0, 0.06)',
+    padding: '0.9rem 1rem',
+    background: '#ffffff',
+    border: '1.5px solid #e4e6ea',
     borderRadius: '16px',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
+    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.02)',
   },
   topicCardActive: {
     borderColor: '#1f2123',
-    background: '#f6f5f1',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    background: '#1f2123',
+    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
+    transform: 'translateY(-1px)',
   },
   topicCardHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    color: '#1f2123',
-    marginBottom: '3px',
+    marginBottom: '4px',
+  },
+  activeCheckPill: {
+    width: '20px',
+    height: '20px',
+    borderRadius: '50%',
+    background: '#f5c842',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  inactiveCircle: {
+    width: '18px',
+    height: '18px',
+    borderRadius: '50%',
+    border: '1.5px solid #d1d5db',
+    background: 'transparent',
+    flexShrink: 0,
   },
   topicDesc: {
     display: 'block',
-    fontSize: '0.72rem',
-    color: '#71757c',
-    lineHeight: 1.3,
+    fontSize: '0.74rem',
+    lineHeight: 1.35,
+    fontWeight: 500,
   },
   segmentedControl: {
     display: 'flex',
@@ -1341,17 +1391,19 @@ const styles = {
     color: '#ffffff',
   },
   formatCard: {
-    padding: '0.85rem',
-    background: '#fafaf9',
-    border: '1px solid rgba(0, 0, 0, 0.06)',
+    padding: '0.95rem 1rem',
+    background: '#ffffff',
+    border: '1.5px solid #e4e6ea',
     borderRadius: '16px',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
+    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.02)',
   },
   formatCardActive: {
     borderColor: '#1f2123',
-    background: '#f6f5f1',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    background: '#1f2123',
+    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
+    transform: 'translateY(-1px)',
   },
   primaryLaunchBtn: {
     width: '100%',
