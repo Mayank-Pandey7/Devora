@@ -57,9 +57,9 @@ export default function HomePage() {
     }
 
     if (travelLogoRef.current) {
-      // Elegant 3D parabolic curved trajectory: arc lift + subtle outward curve sway
-      const arcLift = Math.sin(p * Math.PI) * -52;
-      const curveSwayX = Math.sin(p * Math.PI) * -38;
+      // Elegant parabolic swoop from BELOW (positive Y dip + organic sway)
+      const arcDip = Math.sin(p * Math.PI) * 58;
+      const curveSwayX = Math.sin(p * Math.PI) * 32;
 
       // Start coordinates (Hero title viewport center)
       const startX = heroRect.left + heroRect.width / 2;
@@ -69,20 +69,20 @@ export default function HomePage() {
       const targetX = navRect.left + 96;
       const targetY = navRect.top + navRect.height / 2;
 
-      // Smooth curved arc coordinates (X, Y)
+      // Smooth curved arc coordinates (X, Y) - swoops from BELOW
       const currentX = startX + (targetX - startX) * p + curveSwayX;
-      const currentY = startY + (targetY - startY) * p + arcLift;
+      const currentY = startY + (targetY - startY) * p + arcDip;
 
       // Font size scaling: from Hero size down to Navbar docked font size (23.2px / 1.45rem)
       const heroFontSize = parseFloat(window.getComputedStyle(heroLogoRef.current).fontSize) || 120;
       const targetFontSize = 23.2;
       const currentFontSize = heroFontSize + (targetFontSize - heroFontSize) * p;
 
-      // COLOR: Stays crisp pure white (#ffffff) during travel, turns black only when docking into navbar (p >= 0.82)
-      let colorRgb = "rgb(255, 255, 255)";
+      // COLOR: 100% pure white (#ffffff) throughout travel; transitions to black ONLY at the very end when docked inside navbar (p >= 0.94)
+      let colorRgb = "#ffffff";
       let shadowAlpha = 0.95;
-      if (p > 0.82) {
-        const dockT = (p - 0.82) / 0.18; // 0 to 1 in final 18% of travel
+      if (p >= 0.94) {
+        const dockT = (p - 0.94) / 0.06;
         const r = Math.round(255 - (255 - 31) * dockT);
         const g = Math.round(255 - (255 - 33) * dockT);
         const b = Math.round(255 - (255 - 35) * dockT);
@@ -792,16 +792,14 @@ export default function HomePage() {
           margin: 0;
           padding: 0;
           user-select: none;
-          color: #ffffff;
+          color: #ffffff !important;
           background: none !important;
           background-color: transparent !important;
-          -webkit-text-fill-color: #ffffff;
+          -webkit-text-fill-color: #ffffff !important;
           filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.95));
         }
 
         .universal-hero-title.devora-traveling-logo {
-          color: unset !important;
-          -webkit-text-fill-color: unset !important;
           will-change: transform, left, top, font-size, color, filter;
         }
 
