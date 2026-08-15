@@ -101,7 +101,18 @@ router.post(
       res.json({
         success: true,
         token,
-        user: { id: user._id, name: user.name, email: user.email, interests: user.interests, defaultTone: user.defaultTone },
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          targetRole: user.targetRole,
+          experienceLevel: user.experienceLevel,
+          skills: user.skills,
+          avatar: user.avatar,
+          careerScore: user.careerScore,
+          interviewScore: user.interviewScore,
+          resumeScore: user.resumeScore,
+        },
       });
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
@@ -132,6 +143,7 @@ router.post(
         name,
         email,
         password,
+        authProvider: 'local',
         targetRole: typeof targetRole === 'string' ? targetRole : 'Full Stack Developer'
       });
       const token = generateToken(user._id);
@@ -145,7 +157,11 @@ router.post(
           email: user.email,
           targetRole: user.targetRole,
           experienceLevel: user.experienceLevel,
-          skills: user.skills
+          skills: user.skills,
+          avatar: user.avatar,
+          careerScore: user.careerScore,
+          interviewScore: user.interviewScore,
+          resumeScore: user.resumeScore,
         },
       });
     } catch (err) {
@@ -169,8 +185,20 @@ router.post(
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email }).select('+password');
-      if (!user || !(await user.matchPassword(password)))
+      if (!user) {
         return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+      }
+
+      if (!user.password && user.googleId) {
+        return res.status(400).json({
+          success: false,
+          message: 'This account was created with Google. Please use "Continue with Google" to sign in.'
+        });
+      }
+
+      if (!(await user.matchPassword(password))) {
+        return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+      }
 
       const token = generateToken(user._id);
       res.json({
@@ -183,7 +211,10 @@ router.post(
           targetRole: user.targetRole,
           experienceLevel: user.experienceLevel,
           skills: user.skills,
-          avatar: user.avatar
+          avatar: user.avatar,
+          careerScore: user.careerScore,
+          interviewScore: user.interviewScore,
+          resumeScore: user.resumeScore,
         },
       });
     } catch (err) {
@@ -191,62 +222,74 @@ router.post(
     }
   }
 );
+
 // ── POST /api/auth/google ────────────────────
 router.post('/google', async (req, res) => {
   try {
-    const { credential, accessToken, googleUser } = req.body;
+    const { credential, accessToken } = req.body;
     let email, name, googleId, avatar;
 
     if (credential) {
-      // Verify Google ID Token via Google's tokeninfo API
+      // Verify Google ID Token via Google's tokeninfo endpoint
       const fetch = require('node-fetch');
       const gRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
-      if (gRes.ok) {
-        const payload = await gRes.json();
-        email = payload.email;
-        name = payload.name || payload.given_name || (email ? email.split('@')[0] : 'Google User');
-        googleId = payload.sub;
-        avatar = payload.picture;
+      if (!gRes.ok) {
+        return res.status(401).json({ success: false, message: 'Invalid Google credential token.' });
       }
+      const payload = await gRes.json();
+      email = payload.email;
+      name = payload.name || payload.given_name || (email ? email.split('@')[0] : 'Google User');
+      googleId = payload.sub;
+      avatar = payload.picture;
     } else if (accessToken) {
-      // Verify via userinfo API
+      // Verify via Google UserInfo endpoint
       const fetch = require('node-fetch');
       const gRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (gRes.ok) {
-        const payload = await gRes.json();
-        email = payload.email;
-        name = payload.name || payload.given_name || (email ? email.split('@')[0] : 'Google User');
-        googleId = payload.sub;
-        avatar = payload.picture;
+      if (!gRes.ok) {
+        return res.status(401).json({ success: false, message: 'Invalid Google OAuth access token.' });
       }
-    } else if (googleUser && googleUser.email) {
-      // Direct payload (e.g. client profile or dev mode)
-      email = googleUser.email;
-      name = googleUser.name || (email ? email.split('@')[0] : 'Google User');
-      googleId = googleUser.id || googleUser.sub || `google_${Date.now()}`;
-      avatar = googleUser.avatar || googleUser.picture;
+      const payload = await gRes.json();
+      email = payload.email;
+      name = payload.name || payload.given_name || (email ? email.split('@')[0] : 'Google User');
+      googleId = payload.sub;
+      avatar = payload.picture;
+    } else {
+      return res.status(400).json({ success: false, message: 'No Google authentication token provided.' });
     }
 
     if (!email) {
-      return res.status(400).json({ success: false, message: 'Invalid Google authentication response.' });
+      return res.status(400).json({ success: false, message: 'Unable to retrieve verified email from Google.' });
     }
 
-    // Find or create user
-    let user = await User.findOne({ $or: [{ googleId }, { email }] });
+    // Find user by Google ID or by existing Email
+    let user = await User.findOne({ $or: [{ googleId }, { email: email.toLowerCase() }] });
 
     if (user) {
-      if (!user.googleId) user.googleId = googleId;
-      if (avatar && !user.avatar) user.avatar = avatar;
-      await user.save();
+      // Safely link Google ID to existing account without overwriting existing passwords
+      let hasChanges = false;
+      if (!user.googleId) {
+        user.googleId = googleId;
+        hasChanges = true;
+      }
+      if (!user.avatar && avatar) {
+        user.avatar = avatar;
+        hasChanges = true;
+      }
+      if (hasChanges) {
+        await user.save();
+      }
     } else {
+      // Create new user account via Google
       user = await User.create({
         name,
-        email,
+        email: email.toLowerCase(),
         googleId,
+        authProvider: 'google',
         avatar,
-        interests: ['technology', 'business'],
+        targetRole: 'Full Stack Developer',
+        skills: ['JavaScript', 'React', 'Node.js'],
       });
     }
 
@@ -259,17 +302,109 @@ router.post('/google', async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        interests: user.interests,
-        defaultTone: user.defaultTone,
+        targetRole: user.targetRole,
+        experienceLevel: user.experienceLevel,
+        skills: user.skills,
         avatar: user.avatar,
+        careerScore: user.careerScore,
+        interviewScore: user.interviewScore,
+        resumeScore: user.resumeScore,
       },
     });
   } catch (err) {
     console.error('Google Auth Error:', err);
-    res.status(500).json({ success: false, message: err.message || 'Google Sign-In failed.' });
+    res.status(500).json({ success: false, message: 'Failed to authenticate with Google. Please try again.' });
   }
 });
 
+
+// ── POST /api/auth/clerk ─────────────────────
+router.post('/clerk', async (req, res) => {
+  try {
+    let { clerkUserId, email, name, avatar, sessionToken } = req.body;
+
+    if (!clerkUserId || !email) {
+      return res.status(400).json({ success: false, message: 'Missing Clerk user details.' });
+    }
+
+    // If CLERK_SECRET_KEY is configured, verify with Clerk API
+    if (process.env.CLERK_SECRET_KEY) {
+      try {
+        const fetchFn = typeof fetch === 'function' ? fetch : require('node-fetch');
+        const cRes = await fetchFn(`https://api.clerk.com/v1/users/${clerkUserId}`, {
+          headers: {
+            Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+          },
+        });
+        if (cRes.ok) {
+          const verifiedUser = await cRes.json();
+          const verifiedEmail = verifiedUser.email_addresses?.find(e => e.id === verifiedUser.primary_email_address_id)?.email_address || verifiedUser.email_addresses?.[0]?.email_address;
+          if (verifiedEmail) {
+            email = verifiedEmail;
+          }
+        }
+      } catch (err) {
+        console.warn('Clerk API verification warning:', err.message);
+      }
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Find user by clerkUserId or by email
+    let user = await User.findOne({
+      $or: [{ clerkUserId }, { email: cleanEmail }]
+    });
+
+    if (user) {
+      // Safely link Clerk User ID and avatar without modifying password
+      let hasChanges = false;
+      if (!user.clerkUserId) {
+        user.clerkUserId = clerkUserId;
+        hasChanges = true;
+      }
+      if (avatar && (!user.avatar || user.avatar.includes('default'))) {
+        user.avatar = avatar;
+        hasChanges = true;
+      }
+      if (hasChanges) {
+        await user.save();
+      }
+    } else {
+      // Create new Devora user associated with Clerk
+      user = await User.create({
+        name: name || cleanEmail.split('@')[0],
+        email: cleanEmail,
+        clerkUserId,
+        authProvider: 'clerk',
+        avatar,
+        targetRole: 'Full Stack Developer',
+        skills: ['JavaScript', 'React', 'Node.js'],
+      });
+    }
+
+    const token = generateToken(user._id);
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        targetRole: user.targetRole,
+        experienceLevel: user.experienceLevel,
+        skills: user.skills,
+        avatar: user.avatar,
+        careerScore: user.careerScore,
+        interviewScore: user.interviewScore,
+        resumeScore: user.resumeScore,
+      },
+    });
+  } catch (err) {
+    console.error('Clerk Auth Error:', err);
+    res.status(500).json({ success: false, message: 'Failed to authenticate with Clerk. Please try again.' });
+  }
+});
 
 // ── GET /api/auth/me ─────────────────────────
 router.get('/me', protect, async (req, res) => {

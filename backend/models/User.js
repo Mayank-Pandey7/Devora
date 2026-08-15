@@ -19,12 +19,18 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: function () {
-        return !this.googleId;
+        return !this.googleId && !this.clerkUserId;
       },
       minlength: [6, 'Password must be at least 6 characters'],
       select: false, // Don't return password in queries by default
     },
     googleId: { type: String },
+    clerkUserId: { type: String, sparse: true, index: true },
+    authProvider: {
+      type: String,
+      enum: ['local', 'google', 'clerk', 'otp'],
+      default: 'local',
+    },
     avatar: { type: String },
     
     // Devora Developer Career Profile Fields
