@@ -270,6 +270,26 @@ export default function InterviewPrep() {
     }
   };
 
+  const handleEndSessionEarly = () => {
+    if (isRecording && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+    if (isSpeaking) {
+      window.speechSynthesis?.cancel();
+      setIsSpeaking(false);
+    }
+
+    if (session?.answers && session.answers.length > 0) {
+      toast.success('Interview ended. Scorecard generated for completed questions!');
+      setViewState('completed');
+    } else {
+      toast('Interview session ended', { icon: '⏹️' });
+      setViewState('config');
+      setSession(null);
+    }
+  };
+
   const handleInsertSTAR = (part) => {
     const templates = {
       S: '\n**Situation:** When working on [project/feature]...',
@@ -630,7 +650,7 @@ export default function InterviewPrep() {
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               {!latestEvaluation && (
                 <div style={styles.liveTimerPill}>
                   <Clock size={13} color="#1f2123" />
@@ -640,6 +660,14 @@ export default function InterviewPrep() {
               <div style={{ fontSize: '0.85rem', color: '#5b5e64', fontWeight: 600 }}>
                 Question <strong>{Math.min(session.currentQuestionIndex + 1, session.totalQuestions)}</strong> of <strong>{session.totalQuestions}</strong>
               </div>
+              <button
+                type="button"
+                onClick={handleEndSessionEarly}
+                style={styles.endSessionBtn}
+                title="End interview session and view scorecard"
+              >
+                End Session
+              </button>
             </div>
           </div>
 
@@ -722,9 +750,13 @@ export default function InterviewPrep() {
                   />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#71757c' }}>
-                      💡 Aim for 150-300 words with concrete engineering examples.
-                    </span>
+                    <button
+                      type="button"
+                      onClick={handleEndSessionEarly}
+                      style={styles.outlineBtnSmall}
+                    >
+                      Exit / End Session
+                    </button>
                     <button
                       type="submit"
                       disabled={submittingAnswer || !currentAnswerText.trim()}
@@ -819,7 +851,14 @@ export default function InterviewPrep() {
                   )}
 
                   {/* Next Question / Finish Action */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem' }}>
+                    <button
+                      type="button"
+                      onClick={handleEndSessionEarly}
+                      style={styles.outlineBtnSmall}
+                    >
+                      Finish & View Scorecard
+                    </button>
                     {session.currentQuestionIndex < session.totalQuestions - 1 ? (
                       <button onClick={handleNextQuestion} style={styles.primaryLaunchBtnInline}>
                         Next Question <ChevronRight size={17} />
@@ -847,8 +886,8 @@ export default function InterviewPrep() {
                 Live Mock Interviewer — {session.role} ({session.interviewType})
               </span>
             </div>
-            <button onClick={() => setViewState('completed')} style={styles.outlineBtn}>
-              End & Generate Scorecard
+            <button onClick={handleEndSessionEarly} style={styles.endSessionBtn}>
+              End Session & View Scorecard
             </button>
           </div>
 
@@ -1376,6 +1415,31 @@ const styles = {
     alignItems: 'center',
     gap: '0.4rem',
     cursor: 'pointer',
+  },
+  outlineBtnSmall: {
+    padding: '0.65rem 1.1rem',
+    background: 'transparent',
+    border: '1px solid #d1d5db',
+    borderRadius: '12px',
+    color: '#71757c',
+    fontWeight: 700,
+    fontSize: '0.82rem',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+  },
+  endSessionBtn: {
+    padding: '0.4rem 0.9rem',
+    background: '#ffffff',
+    border: '1px solid rgba(220, 38, 38, 0.25)',
+    borderRadius: '20px',
+    color: '#dc2626',
+    fontWeight: 800,
+    fontSize: '0.76rem',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    transition: 'all 0.15s ease',
   },
   tipList: {
     margin: 0,
