@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API } from '../context/AuthContext';
-import DevoraLoader from '../components/common/DevoraLoader';
 import HandwrittenPage from '../components/notes/HandwrittenPage';
 import {
   ArrowLeft,
@@ -50,8 +49,15 @@ export default function NoteEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [note, setNote] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [note, setNote] = useState(() => {
+    try {
+      const cachedList = JSON.parse(sessionStorage.getItem('devora_notes_cache') || '[]');
+      const found = cachedList.find(n => n._id === id);
+      if (found) return found;
+    } catch (e) {}
+    return null;
+  });
+  const [loading, setLoading] = useState(!note);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved' | 'saving' | 'unsaved'
   const [isExportingPdf, setIsExportingPdf] = useState(false);
@@ -394,8 +400,20 @@ const loadScript = (src) => {
     }
   };
 
-  if (loading) {
-    return <DevoraLoader message="Opening your handwritten notebook..." />;
+  if (loading && !note) {
+    return (
+      <div className="notes-page-container" style={{ paddingBottom: '6rem' }}>
+        <div style={styles.topHeader}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 0 }}>
+            <button onClick={() => navigate('/notes')} style={styles.backBtn} title="Back to all notes">
+              <ArrowLeft size={16} />
+            </button>
+            <div style={{ height: '24px', width: '220px', background: '#f6f5f1', borderRadius: '12px' }} />
+          </div>
+        </div>
+        <div className="a4-paper-canvas paper-ruled" style={{ marginTop: '1.5rem', opacity: 0.5 }} />
+      </div>
+    );
   }
 
   if (!note) return null;

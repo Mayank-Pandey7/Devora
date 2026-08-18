@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API } from '../context/AuthContext';
-import DevoraLoader from '../components/common/DevoraLoader';
 import HandwrittenPage from '../components/notes/HandwrittenPage';
 import {
   Plus,
@@ -17,10 +16,19 @@ import {
 import toast from 'react-hot-toast';
 import './Notes.css';
 
+const getInitialNotesCache = () => {
+  try {
+    const cached = sessionStorage.getItem('devora_notes_cache');
+    if (cached) return JSON.parse(cached);
+  } catch (e) {}
+  return [];
+};
+
 export default function NotesDashboard() {
   const navigate = useNavigate();
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedNotes = getInitialNotesCache();
+  const [notes, setNotes] = useState(cachedNotes);
+  const [loading, setLoading] = useState(cachedNotes.length === 0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [deleteModalNote, setDeleteModalNote] = useState(null);
@@ -32,14 +40,13 @@ export default function NotesDashboard() {
 
   const fetchNotes = async () => {
     try {
-      setLoading(true);
       const res = await API.get('/notes');
       if (res.data?.success) {
         setNotes(res.data.notes || []);
+        sessionStorage.setItem('devora_notes_cache', JSON.stringify(res.data.notes || []));
       }
     } catch (err) {
       console.error('Failed to fetch notes:', err);
-      toast.error('Failed to load handwritten notes');
     } finally {
       setLoading(false);
     }
@@ -176,9 +183,17 @@ export default function NotesDashboard() {
         </div>
       </div>
 
-      {/* 4. Notes Grid View */}
-      {loading ? (
-        <DevoraLoader message="Loading your handwritten notes..." />
+      {/* 3. Notes Grid View */}
+      {loading && filteredNotes.length === 0 ? (
+        <div className="notes-grid">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="note-card-item" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+              <div className="note-card-preview-thumb paper-ruled" style={{ height: '130px' }} />
+              <div style={{ height: '18px', width: '60%', background: '#f6f5f1', borderRadius: '8px', marginBottom: '8px' }} />
+              <div style={{ height: '14px', width: '40%', background: '#f6f5f1', borderRadius: '8px' }} />
+            </div>
+          ))}
+        </div>
       ) : filteredNotes.length === 0 ? (
         <div style={styles.emptyStateContainer}>
           <div style={styles.emptyIconBox}>
