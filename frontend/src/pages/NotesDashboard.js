@@ -4,86 +4,18 @@ import { API } from '../context/AuthContext';
 import DevoraLoader from '../components/common/DevoraLoader';
 import HandwrittenPage from '../components/notes/HandwrittenPage';
 import {
-  PenTool,
   Plus,
   Search,
-  BookOpen,
   Copy,
   Trash2,
   Calendar,
   FileText,
-  ArrowRight,
   Layers,
   Check,
   X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './Notes.css';
-
-const TEMPLATES = [
-  {
-    title: 'System Design Blueprint',
-    category: 'System Design',
-    pages: [{
-      pageNumber: 1,
-      font: 'Kalam',
-      fontSize: 20,
-      textColor: '#1e293b',
-      lineSpacing: 1.8,
-      letterSpacing: 0.5,
-      paperStyle: 'grid',
-      content: `System Architecture Blueprint
-1. High-Level Requirements
-- Scalability: 10M DAU with 99.99% SLA
-- Latency: < 50ms p99 read operations
-- Storage: Partitioned distributed DB
-
-2. Core Components
-- API Gateway & Rate Limiter (Token Bucket)
-- CDN for static edge delivery
-- Redis Cluster for session cache & hot keys
-- Event Bus (Kafka) for async worker queues`
-    }]
-  },
-  {
-    title: 'DSA & Algorithms Summary',
-    category: 'Algorithms',
-    pages: [{
-      pageNumber: 1,
-      font: 'Caveat',
-      fontSize: 22,
-      textColor: '#1e3a8a',
-      lineSpacing: 1.8,
-      letterSpacing: 0.5,
-      paperStyle: 'ruled',
-      content: `DSA Quick Revision Notes:
-• Binary Search: O(log N) — invariant boundaries (low <= high)
-• Graph BFS/DFS: Visited set, queue vs recursion stack
-• Dynamic Programming:
-  1. Identify state variables (i, j, remaining)
-  2. Write recurrence relation
-  3. Base cases & memoization table`
-    }]
-  },
-  {
-    title: 'Behavioral & STAR Answers',
-    category: 'Interview Prep',
-    pages: [{
-      pageNumber: 1,
-      font: 'Patrick Hand',
-      fontSize: 21,
-      textColor: '#1e293b',
-      lineSpacing: 1.8,
-      letterSpacing: 0.5,
-      paperStyle: 'notebook',
-      content: `STAR Interview Framework:
-Situation: Production DB deadlock during Black Friday peak.
-Task: Restore query throughput within 15 minutes.
-Action: Isolated offending long-running transactions, deployed index patch, configured read replica pool.
-Result: Restored 100% throughput, reduced query latency by 45%.`
-    }]
-  }
-];
 
 export default function NotesDashboard() {
   const navigate = useNavigate();
@@ -113,28 +45,22 @@ export default function NotesDashboard() {
     }
   };
 
-  const handleCreateNewNote = async (template = null) => {
+  const handleCreateNewNote = async () => {
     try {
-      const payload = template
-        ? {
-            title: template.title,
-            category: template.category,
-            pages: template.pages
-          }
-        : {
-            title: 'Untitled Handwritten Note',
-            category: 'General',
-            pages: [{
-              pageNumber: 1,
-              content: '',
-              font: 'Kalam',
-              fontSize: 20,
-              textColor: '#1e293b',
-              lineSpacing: 1.8,
-              letterSpacing: 0.5,
-              paperStyle: 'ruled'
-            }]
-          };
+      const payload = {
+        title: 'Untitled Handwritten Note',
+        category: 'General',
+        pages: [{
+          pageNumber: 1,
+          content: '',
+          font: 'Kalam',
+          fontSize: 20,
+          textColor: '#1e293b',
+          lineSpacing: 1.8,
+          letterSpacing: 0.5,
+          paperStyle: 'ruled'
+        }]
+      };
 
       const res = await API.post('/notes', payload);
       if (res.data?.success && res.data.note?._id) {
@@ -197,10 +123,6 @@ export default function NotesDashboard() {
       {/* 1. Header Banner & Quick Actions */}
       <div style={styles.topHeaderRow}>
         <div>
-          <div style={styles.badgePill}>
-            <PenTool size={13} color="#1f2123" />
-            <span>Devora Handwriting Studio</span>
-          </div>
           <h1 style={styles.mainTitle}>Handwritten Notes</h1>
           <p style={styles.subTitle}>
             Type with natural handwriting aesthetics on realistic ruled, grid, and notebook paper. Export multi-page A4 PDFs with true ink styling.
@@ -217,33 +139,7 @@ export default function NotesDashboard() {
         </button>
       </div>
 
-      {/* 2. Starter Templates Carousel / Quick Launcher */}
-      <div style={styles.templatesSection}>
-        <div style={styles.templatesHeader}>
-          <span style={styles.templatesHeaderTitle}>Quick Starter Templates</span>
-        </div>
-        <div style={styles.templatesGrid}>
-          {TEMPLATES.map((tmpl, idx) => (
-            <div
-              key={idx}
-              style={styles.templateCard}
-              onClick={() => handleCreateNewNote(tmpl)}
-              title={`Start with ${tmpl.title}`}
-            >
-              <div style={styles.templateIconBox}>
-                <BookOpen size={16} color="#1f2123" />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={styles.templateTitle}>{tmpl.title}</div>
-                <div style={styles.templateCategory}>{tmpl.category} • {tmpl.pages[0].paperStyle} paper</div>
-              </div>
-              <ArrowRight size={14} color="#64748b" />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. Search & Filter Bar */}
+      {/* 2. Search & Filter Bar */}
       <div style={styles.filterRow}>
         <div style={styles.searchWrapper}>
           <Search size={16} color="#94a3b8" />
@@ -450,22 +346,8 @@ const styles = {
     marginBottom: '2.5rem',
     flexWrap: 'wrap',
   },
-  badgePill: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '6px 16px',
-    background: '#f6f5f1',
-    border: '1px solid rgba(0, 0, 0, 0.07)',
-    borderRadius: '30px',
-    fontSize: '0.75rem',
-    fontWeight: 700,
-    color: '#1f2123',
-    marginBottom: '0.75rem',
-    letterSpacing: '0.01em'
-  },
   mainTitle: {
-        fontSize: '2.5rem',
+    fontSize: '2.5rem',
     fontWeight: 800,
     color: '#1f2123',
     margin: '0 0 0.5rem 0',
@@ -487,65 +369,11 @@ const styles = {
     color: '#f5c842',
     border: 'none',
     borderRadius: '30px',
-        fontWeight: 700,
+    fontWeight: 700,
     fontSize: '0.95rem',
     cursor: 'pointer',
     boxShadow: '0 8px 20px -5px rgba(26, 25, 20, 0.3)',
     transition: 'transform 0.2s ease'
-  },
-  templatesSection: {
-    background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.07)',
-    borderRadius: '24px',
-    padding: '1.5rem',
-    marginBottom: '2rem'
-  },
-  templatesHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    marginBottom: '1rem'
-  },
-  templatesHeaderTitle: {
-    fontSize: '0.75rem',
-    fontWeight: 800,
-    
-    letterSpacing: '0.04em',
-    color: '#8e9298'
-  },
-  templatesGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '1rem'
-  },
-  templateCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    padding: '1rem',
-    background: '#f6f5f1',
-    border: '1px solid rgba(0, 0, 0, 0.07)',
-    borderRadius: '16px',
-    cursor: 'pointer'
-  },
-  templateIconBox: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '12px',
-    background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.07)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  templateTitle: {
-    fontSize: '0.9rem',
-    fontWeight: 700,
-    color: '#1f2123'
-  },
-  templateCategory: {
-    fontSize: '0.75rem',
-    color: '#71757c'
   },
   filterRow: {
     display: 'flex',
