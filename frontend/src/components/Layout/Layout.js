@@ -89,6 +89,15 @@ export default function Layout() {
           >
             Resume ATS
           </NavLink>
+          <NavLink
+            to="/notes"
+            style={({ isActive }) => ({
+              ...styles.navItem,
+              ...(isActive ? styles.navItemActive : {})
+            })}
+          >
+            Notes
+          </NavLink>
         </nav>
 
         {/* Unified Profile Pill + Logout Button */}

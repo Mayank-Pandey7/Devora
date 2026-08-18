@@ -40,6 +40,7 @@ app.use(async (req, res, next) => {
 app.use('/api/auth',       require('./routes/auth'));
 app.use('/api/interviews', require('./routes/interviews'));
 app.use('/api/resumes',    require('./routes/resumes'));
+app.use('/api/notes',      require('./routes/notes'));
 app.use('/api/dashboard',  require('./routes/dashboard'));
 
 // Legacy routes fallback compatibility

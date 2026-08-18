@@ -22,7 +22,9 @@ import {
   Github,
   Linkedin,
   Globe,
-  LogOut
+  LogOut,
+  PenTool,
+  BookOpen
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -228,6 +230,14 @@ export default function Dashboard() {
                 </div>
                 <div style={styles.counterNumber}>{resumeScore > 0 ? `${resumeScore}%` : '—'}</div>
                 <div style={styles.counterLabel}>ATS Score</div>
+              </div>
+
+              <div style={{ ...styles.counterItem, cursor: 'pointer' }} onClick={() => navigate('/notes')} title="View Handwritten Notes">
+                <div style={styles.counterIconCircle}>
+                  <PenTool size={13} color="#1f2123" />
+                </div>
+                <div style={styles.counterNumber}>Notes</div>
+                <div style={styles.counterLabel}>Studio</div>
               </div>
             </div>
           </div>

@@ -11,6 +11,8 @@ import RegisterPage    from './pages/RegisterPage';
 import Dashboard       from './pages/Dashboard';
 import InterviewPrep   from './pages/InterviewPrep';
 import ResumeAnalyzer  from './pages/ResumeAnalyzer';
+import NotesDashboard  from './pages/NotesDashboard';
+import NoteEditor      from './pages/NoteEditor';
 import Profile         from './pages/Profile';
 import Layout          from './components/Layout/Layout';
 
@@ -51,6 +53,8 @@ function AppRoutes() {
         <Route path="/dashboard"        element={<Dashboard />} />
         <Route path="/interview"        element={<InterviewPrep />} />
         <Route path="/resume-analyzer"  element={<ResumeAnalyzer />} />
+        <Route path="/notes"            element={<NotesDashboard />} />
+        <Route path="/notes/:id"        element={<NoteEditor />} />
         <Route path="/profile"          element={<Profile />} />
 
         {/* Legacy route redirects */}

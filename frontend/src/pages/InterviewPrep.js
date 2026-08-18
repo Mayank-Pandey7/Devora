@@ -10,7 +10,6 @@ import {
   AlertCircle,
   Clock,
   Award,
-  Sparkles,
   ArrowRight,
   RefreshCw,
   HelpCircle,
@@ -18,14 +17,12 @@ import {
   BarChart3,
   History,
   Send,
-  Zap,
   ChevronRight,
   BookOpen,
   Check,
   RotateCcw,
   Code,
   List,
-  Flame,
   CheckSquare
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -491,7 +488,7 @@ export default function InterviewPrep() {
           {/* Left: Configuration Form */}
           <div style={styles.card}>
             <h2 style={styles.cardTitle}>
-              <Zap size={18} color="#f5c842" /> Configure AI Interview Session
+              Configure Interview Session
             </h2>
 
             {/* Target Role */}
@@ -663,8 +660,8 @@ export default function InterviewPrep() {
 
             <div style={{ ...styles.card, background: '#f6f5f1', border: '1px solid rgba(0, 0, 0, 0.08)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
-                <Sparkles size={18} color="#1f2123" />
-                <span style={{ fontWeight: 800, color: '#1f2123', fontSize: '0.92rem' }}>AI Evaluation Criteria</span>
+                <CheckSquare size={16} color="#1f2123" />
+                <span style={{ fontWeight: 800, color: '#1f2123', fontSize: '0.92rem' }}>Evaluation Criteria</span>
               </div>
               <p style={{ fontSize: '0.82rem', color: '#5b5e64', lineHeight: 1.5, margin: 0 }}>
                 Your responses are analyzed for technical depth, structural completeness, handling of edge cases, architectural trade-offs, and communication clarity.
@@ -1012,7 +1009,7 @@ export default function InterviewPrep() {
             <div style={styles.scorecardHeroIcon}>
               <Award size={36} color="#f5c842" />
             </div>
-            <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#1f2123', marginBottom: '0.4rem', fontFamily: "'Libre Caslon Text', Georgia, serif" }}>
+            <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#1f2123', marginBottom: '0.4rem', }}>
               Interview Performance Scorecard
             </h2>
             <p style={{ color: '#5b5e64', fontSize: '0.92rem', margin: 0 }}>
@@ -1158,31 +1155,25 @@ const styles = {
     margin: '0 auto',
     width: '100%',
     boxSizing: 'border-box',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontFamily: "'Playpen Sans', cursive, sans-serif",
   },
   heroSection: {
-    marginBottom: '1.75rem',
+    marginBottom: '2.5rem',
   },
   greetingTitle: {
-    fontSize: '2rem',
+    fontSize: '2.6rem',
     fontWeight: 800,
     color: '#1f2123',
-    margin: 0,
-    fontFamily: "'Space Grotesk', sans-serif",
-    letterSpacing: '-0.02em',
+    margin: '0 0 1.25rem 0',
+        letterSpacing: '-0.03em',
   },
   heroMetricsBar: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.05)',
-    borderRadius: '24px',
-    padding: '0.85rem 1.25rem',
+    alignItems: 'flex-end',
     marginTop: '1.25rem',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
     flexWrap: 'wrap',
-    gap: '1rem',
+    gap: '2rem',
   },
   segmentedMetricGroup: {
     display: 'flex',
@@ -1250,29 +1241,33 @@ const styles = {
     gap: '1.25rem',
   },
   counterItem: {
-    display: 'flex',
+    display: 'grid',
+    gridTemplateColumns: 'auto auto',
     alignItems: 'center',
-    gap: '0.45rem',
+    columnGap: '0.4rem',
   },
   counterIconCircle: {
     width: '26px',
     height: '26px',
     borderRadius: '50%',
-    background: '#f6f5f1',
-    border: '1px solid rgba(0, 0, 0, 0.06)',
+    background: 'rgba(0, 0, 0, 0.05)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    gridRow: 'span 2',
   },
   counterNumber: {
-    fontSize: '0.95rem',
+    fontSize: '2.5rem',
     fontWeight: 800,
     color: '#1f2123',
+    lineHeight: 1,
+    letterSpacing: '-0.03em',
   },
   counterLabel: {
-    fontSize: '0.75rem',
-    color: '#71757c',
+    fontSize: '0.72rem',
     fontWeight: 600,
+    color: '#71757c',
+    gridColumn: 2,
   },
   configGrid: {
     display: 'grid',
@@ -1282,7 +1277,7 @@ const styles = {
   },
   card: {
     background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.05)',
+    border: '1px solid rgba(0, 0, 0, 0.04)',
     borderRadius: '24px',
     padding: '1.75rem',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
@@ -1317,16 +1312,15 @@ const styles = {
   selectInput: {
     width: '100%',
     padding: '0.65rem 0.9rem',
-    background: '#fcfcfd',
-    border: '1px solid #e4e6ea',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0, 0, 0, 0.07)',
     borderRadius: '12px',
     color: '#1f2123',
     fontSize: '0.88rem',
     fontWeight: 600,
     outline: 'none',
     boxSizing: 'border-box',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-  },
+      },
   topicGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -1334,9 +1328,9 @@ const styles = {
   },
   topicCard: {
     padding: '0.9rem 1rem',
-    background: '#fafaf9',
-    border: '1px solid rgba(0, 0, 0, 0.05)',
-    borderRadius: '16px',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0, 0, 0, 0.06)',
+    borderRadius: '14px',
     cursor: 'pointer',
     outline: 'none',
     WebkitTapHighlightColor: 'transparent',
@@ -1383,8 +1377,8 @@ const styles = {
   },
   segmentedControl: {
     display: 'flex',
-    background: '#f0f2f5',
-    border: '1px solid rgba(0, 0, 0, 0.04)',
+    background: 'rgba(255, 255, 255, 0.85)',
+    border: '1px solid rgba(0, 0, 0, 0.07)',
     borderRadius: '30px',
     padding: '3px',
     gap: '3px',
@@ -1409,9 +1403,9 @@ const styles = {
   },
   formatCard: {
     padding: '0.95rem 1rem',
-    background: '#fafaf9',
-    border: '1px solid rgba(0, 0, 0, 0.05)',
-    borderRadius: '16px',
+    background: '#f6f5f1',
+    border: '1px solid rgba(0, 0, 0, 0.06)',
+    borderRadius: '14px',
     cursor: 'pointer',
     outline: 'none',
     WebkitTapHighlightColor: 'transparent',
@@ -1431,7 +1425,7 @@ const styles = {
     padding: '0.85rem 1.25rem',
     background: '#1f2123',
     border: 'none',
-    borderRadius: '14px',
+    borderRadius: '30px',
     color: '#ffffff',
     fontWeight: 800,
     fontSize: '0.92rem',
@@ -1440,7 +1434,7 @@ const styles = {
     justifyContent: 'center',
     gap: '0.5rem',
     cursor: 'pointer',
-    transition: 'background 0.15s ease',
+    transition: 'all 0.2s ease',
     marginTop: '0.5rem',
   },
   primaryLaunchBtnInline: {
@@ -1458,9 +1452,10 @@ const styles = {
     cursor: 'pointer',
   },
   secondaryBtn: {
-    padding: '0.65rem 1.25rem',
-    background: '#ffffff',
-    border: '1px solid rgba(0, 0, 0, 0.08)',
+    padding: '0.6rem 1.25rem',
+    background: 'rgba(255, 255, 255, 0.85)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 0, 0, 0.07)',
     borderRadius: '30px',
     color: '#1f2123',
     fontWeight: 700,
@@ -1469,14 +1464,14 @@ const styles = {
     alignItems: 'center',
     gap: '0.5rem',
     cursor: 'pointer',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)',
   },
   outlineBtn: {
     padding: '0.65rem 1.25rem',
     background: 'transparent',
-    border: '1px solid #d1d5db',
+    border: '1px solid rgba(0, 0, 0, 0.12)',
     borderRadius: '30px',
-    color: '#5b5e64',
+    color: '#1f2123',
     fontWeight: 700,
     fontSize: '0.85rem',
     display: 'flex',
@@ -1690,8 +1685,7 @@ const styles = {
     border: '2px solid',
     fontWeight: 900,
     fontSize: '1.2rem',
-    fontFamily: "'Space Grotesk', sans-serif",
-  },
+      },
   evalSection: {
     marginBottom: '1rem',
   },
@@ -1877,8 +1871,7 @@ const styles = {
     fontSize: '3rem',
     fontWeight: 900,
     color: '#f5c842',
-    fontFamily: "'Space Grotesk', sans-serif",
-  },
+      },
   bigScoreTotal: {
     fontSize: '1.2rem',
     color: '#94a3b8',
@@ -1909,8 +1902,7 @@ const styles = {
     fontSize: '1.4rem',
     fontWeight: 800,
     color: '#1f2123',
-    fontFamily: "'Space Grotesk', sans-serif",
-  },
+      },
   scorecardAnswerCard: {
     padding: '1rem',
     background: '#f6f5f1',

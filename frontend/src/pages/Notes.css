@@ -1,0 +1,364 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Dancing+Script:wght@400;600;700&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Shadows+Into+Light&display=swap');
+
+/* ── Notes Hub / Root Layout ───────────────────────────────── */
+.notes-page-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 4rem 2rem;
+  box-sizing: border-box;
+  font-family: 'Playpen Sans', cursive, sans-serif;
+  color: #1f2123;
+}
+
+/* ── Realistic Paper Styles & Backgrounds ─────────────────── */
+.a4-paper-canvas {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  min-height: 1130px;
+  margin: 0 auto;
+  background-color: #fffdf9;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 1. Ruled / Lined Paper with Red Margin Line */
+.paper-ruled {
+  background-color: #fefdfa;
+  background-image: 
+    linear-gradient(90deg, transparent 79px, #f472b6 79px, #f472b6 81px, transparent 81px),
+    linear-gradient(#e2e8f0 1px, transparent 1px);
+  background-size: 100% 100%, 100% 36px;
+  background-position: 0 0, 0 80px;
+  padding: 80px 48px 48px 96px !important;
+}
+
+/* 2. Engineering / Math Grid Paper */
+.paper-grid {
+  background-color: #fdfdfc;
+  background-image: 
+    linear-gradient(to right, rgba(203, 213, 225, 0.65) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(203, 213, 225, 0.65) 1px, transparent 1px);
+  background-size: 28px 28px;
+  padding: 60px 54px !important;
+}
+
+/* 3. Plain Clean Ivory Paper */
+.paper-plain {
+  background-color: #fdfcfa;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.015) 1px, transparent 0);
+  background-size: 24px 24px;
+  padding: 64px 54px !important;
+}
+
+/* 4. Spiral Notebook Paper */
+.paper-notebook {
+  background-color: #fffefb;
+  background-image: 
+    radial-gradient(circle at 20px 40px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 100px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 160px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 220px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 280px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 340px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 400px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 460px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 520px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 580px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 640px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 700px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 760px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 820px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 880px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 940px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 1000px, #e2e8f0 9px, transparent 10px),
+    radial-gradient(circle at 20px 1060px, #e2e8f0 9px, transparent 10px),
+    linear-gradient(90deg, transparent 65px, #93c5fd 65px, #93c5fd 67px, transparent 67px),
+    linear-gradient(#e5e7eb 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 36px;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 80px;
+  padding: 80px 48px 48px 84px !important;
+}
+
+/* 5. Bullet Journal Dot Grid */
+.paper-dots {
+  background-color: #fffefc;
+  background-image: radial-gradient(#94a3b8 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+  background-position: 12px 12px;
+  padding: 64px 54px !important;
+}
+
+/* ── Handwriting Typography & Organic Texture ─────────────── */
+.handwriting-textarea {
+  width: 100%;
+  min-height: 960px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-weight: 400;
+  box-sizing: border-box;
+  text-shadow: 0 0 0.4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.handwriting-textarea::placeholder {
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+/* ── Handwritten Rendered Display View ─────────────────────── */
+.handwritten-content-display {
+  width: 100%;
+  min-height: 960px;
+  background: transparent;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-sizing: border-box;
+  user-select: text;
+}
+
+/* Organic word & character micro-variation classes */
+.hw-word {
+  display: inline-block;
+  white-space: pre;
+  transition: transform 0.1s ease;
+}
+
+.hw-char {
+  display: inline-block;
+  transform-origin: center bottom;
+}
+
+/* ── Editor Toolbar Island ─────────────────────────────────── */
+.notes-toolbar-capsule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 40px;
+  padding: 6px 14px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+}
+
+.notes-tool-divider {
+  width: 1px;
+  height: 22px;
+  background: #e2e8f0;
+  margin: 0 2px;
+}
+
+.notes-tool-select {
+  background: #f6f5f1;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-family: 'Playpen Sans', cursive, sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1f2123;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.notes-tool-select:hover {
+  background: #ebe9e3;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.notes-color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.notes-color-swatch.active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px #1f2123, 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Page Navigation Pill ──────────────────────────────────── */
+.notes-page-nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 30px;
+  padding: 4px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.notes-nav-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.notes-nav-btn:hover:not(:disabled) {
+  background: #1f2123;
+  color: #ffffff;
+}
+
+.notes-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Save Status Badge ─────────────────────────────────────── */
+.save-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.save-status-saved {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.save-status-saving {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.save-status-unsaved {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* ── Note Card Grid in Dashboard ───────────────────────────── */
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+  margin-top: 0;
+}
+
+.note-card-item {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.note-card-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.note-card-preview-thumb {
+  width: 100%;
+  height: 130px;
+  border-radius: 14px;
+  margin-bottom: 1rem;
+  padding: 0.85rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+}
+
+/* ── Mobile & Responsive Breakpoints ───────────────────────── */
+@media (max-width: 900px) {
+  .a4-paper-canvas {
+    min-height: 800px;
+    padding: 60px 24px 30px 48px !important;
+  }
+  .notes-toolbar-capsule {
+    border-radius: 20px;
+    padding: 8px 12px;
+  }
+  .notes-page-container {
+    padding: 1rem 1rem 3rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .paper-ruled {
+    background-position: 0 0, 0 60px;
+    padding: 60px 16px 24px 44px !important;
+  }
+  .a4-paper-canvas {
+    border-radius: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .notes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Print & PDF Media Styles ──────────────────────────────── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  body, html {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .global-top-nav,
+  .notes-toolbar-capsule,
+  .notes-page-nav-pill,
+  .notes-top-header-bar,
+  header,
+  nav,
+  button {
+    display: none !important;
+  }
+  .a4-paper-canvas {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+  }
+}
+
