@@ -197,13 +197,6 @@ export default function Dashboard() {
                   </span>
                 </div>
               </div>
-
-              <div style={styles.segmentColumn}>
-                <span style={styles.segmentLabel}>Resume ATS</span>
-                <div style={styles.segmentPillOutlined}>
-                  <span>{resumeScore > 0 ? `${resumeScore}%` : 'Unscanned'}</span>
-                </div>
-              </div>
             </div>
 
             {/* Real Counter Group */}
@@ -267,15 +260,11 @@ export default function Dashboard() {
             {/* 2. Frosted Ambient Gradient Overlay at Bottom */}
             <div style={styles.cardBottomFrostedGradient} />
 
-            {/* 3. Bottom Float Row: Name & Role on Left + Frosted Pill on Right */}
+            {/* 3. Bottom Float Row: Name & Role */}
             <div style={styles.cardBottomFloatRow}>
               <div style={styles.cardBottomTextCol}>
                 <h3 style={styles.cardBottomName}>{user?.name || 'Mayank Pandey'}</h3>
                 <span style={styles.cardBottomRole}>{targetRole || 'Full Stack Developer'}</span>
-              </div>
-
-              <div style={styles.cardFrostedScorePill}>
-                <span>{careerScore > 0 ? `${careerScore}/100` : '70/100'}</span>
               </div>
             </div>
           </div>
